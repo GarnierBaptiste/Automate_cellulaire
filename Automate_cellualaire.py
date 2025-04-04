@@ -2,11 +2,11 @@ class Automate:
     """
     Classe qui représente l'automate cellualire par ces règles ainsi que l'état des cellules
     """
-    def __init__(self):
+    def __init__(self,nom_fichier):
         """
         Constructeur pour la classe Automate
         """
-        self.regle = recup('Automate_cellulaire.txt')
+        self.regle = recup(nom_fichier)
         self.etat_cellules = recup(self.regle)
 
     def get_regles(self):
@@ -116,15 +116,15 @@ def un_pas(mot : Configuration,automate : Automate):
             nv_ruban.append(automate.regle[transition]) 
     return (nv_ruban,transition)
 
-def calcul_automate(mot : Configuration,automate : Automate,iteration=None,transition_particuliere=None,succession=None):
-    '''
+def calcul_automate(mot:Configuration,automate:Automate,iteration=None,transition_particuliere=None,succession=None):
+    """
     QUESTION 5: : Ecrire une fonction qui prend comme argument un mot et un automate cellulaire et qui 
     simule le calcul de l'automate. Vous proposerez plusieurs modes pour arrêter le calcul :
     — apr`es un nombre de pas de calcul donnée
     — apr`es l'application d'une transition particuli`ere
     — quand il n y a pas de changements entre deux configurations successives
-    '''
-      
+    """
+    print(mot.get_mot())
     if iteration:
         print('je suis l iteration')
         for i in range(iteration):
@@ -153,12 +153,18 @@ def calcul_automate(mot : Configuration,automate : Automate,iteration=None,trans
             mot.mot=un_pas(mot,auto)[0]
             print(mot.get_mot())
             conf2=mot.mot
-            # print(conf1,conf2)
         return mot.mot
 
+def initialisation(nom_fichier, mot_entre):
+    """
+    QUESTION 3 : : Ecrire une fonction qui lit un fichier texte contenant le code d'un automate
+    cellulaire et un d'mot d'entrée et qui initialise la structure de données pour représenter cet automate.
+    """
+    auto = Automate(nom_fichier)
+    mot = Configuration(mot_entre)
+    return auto,mot
+
 if __name__ == "__main__":
-    auto = Automate()
-    mot = Configuration('0001000')
-    print(un_pas(mot,auto)[0])
-    print(calcul_automate(mot,auto,iteration=5))
+    auto, config = initialisation('Fichier_Automate\Automate_infini.txt','0001000')
+    calcul_automate(config,auto,iteration=3)
     
