@@ -1,4 +1,4 @@
-aabaaaa
+aab
 q0
 accept
 q0,a,q0,a,>
