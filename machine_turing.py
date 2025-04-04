@@ -4,6 +4,7 @@ class Machine_Turing():
         self.ruban=[]
         self.alphabet=set(0,1,'_')
         self.etat=etats
+        self.curseur=0
 
 class Configuration():
     def __init__(self,conf):
@@ -11,22 +12,19 @@ class Configuration():
         
 def lecture(fichier):
     with open(fichier,'r') as f:
-        lignes=[]
-        for ligne in f:
-            ligne=ligne.split()
-            if ligne !=[]:
-                lignes.append(ligne)
-            
-        print(lignes) 
-        # lignes=f.readlines().split('\n')
-        # etats=set([lignes[0].split('\n'),lignes[1]])
-        # temp=[]
-        # for elem in lignes[2:]:
-        #     print(temp)
-        #     # if elem != '':
-        #     #     temp.append((elem.split(',')))
-        # print(etats)
-            
+        etats=set()
+        configuration=[]
+        lignes=f.readlines()
+        mot=lignes[0][0].replace('\n','')
+        etats.add(lignes[1][0].replace('\n',''))
+        etats.add(lignes[2][0].replace('\n',''))
+        for ligne in lignes[2:]:
+            ligne=ligne.split(',')
+            etats.add(ligne[0])
+            etats.add(ligne[2])
+            configuration.append((ligne[0],ligne[1],ligne[2],ligne[3],ligne[4].replace('\n','')))
+        return mot,configuration,etats
+        
         
 lecture('example.txt')
         
