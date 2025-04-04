@@ -1,140 +1,164 @@
-class Grille:
-    def __init__(self, mot, automate_cellulaire):
-        self.automate=automate_cellulaire  #les transitions
-        self.taille = len(mot)
-        self.ruban = [str(elem) for elem in mot]
-        liste = []
-        for elem in self.ruban:
-            if elem not in liste:
-                liste.append(elem)
-        self.etat_cellules = liste
-        
-    def get_taille(self):
-        return self.taille
-    
-    def get_ruban(self):
-        return self.ruban
-    '''
-    Permet de passer de self.ruban a un mot c'est a dire que si j'ai ['1','0','1','1,'] la fonction renvoie '1011'
-    '''
-    def get_mot(self):
-        nv_mot=''
-        for lettre in self.ruban:
-            nv_mot+=lettre
-        return nv_mot
+class Automate:
+    """
+    Classe qui représente l'automate cellualire par ces règles ainsi que l'état des cellules
+    """
+    def __init__(self):
+        """
+        Constructeur pour la classe Automate
+        """
+        self.regle = recup('Automate_cellulaire.txt')
+        self.etat_cellules = recup(self.regle)
 
+    def get_regles(self):
+        """
+        Permet de reécupérer les règles qui définissent l'automate cellulaire
+        """
+        return self.regle
+    
     def get_etat_cellules(self):
+        """
+        Permet de récupérer les état possibles des celullues de l'automate 
+        """
         return self.etat_cellules
     
-    def set_ruban(self, grille):
-        self.ruban =[str(elem) for elem in grille] 
+    def updates_regles(self):
+        """
+        Permet de définir les règles de l'automate cellulaire
+        """
+        self.regle = recup('Automate_cellulaire.txt')
+        self.etat_cellules = recup(self.regle)
 
-    def get_elem(self,i):
-        return self.get_ruban()[i]
-        
+class Configuration:
+    """
+    Classe qui représente les mots qu'on mettra dans l'automate cellulaire
+    """
+    def __init__(self, mot):
+        """
+        Constructeur pour la classe Configuration
+        """
+        self.mot = [str(elem) for elem in mot]
 
+    def get_taille(self):
+        """
+        Renvoie la taille du mot
+        """
+        return len(self.mot)
+    
+    def get_mot(self):
+        """
+        Permet de passer d'une liste a un str c'est a dire que si j'ai 
+        ['1','0','1','1,'] la fonction renvoie '1011'
+        """
+        nv_mot=''
+        for lettre in self.mot:
+            nv_mot+=lettre
+        return nv_mot
+    
     def __str__(self):
-        mot = ""
-        for elem in self.get_ruban():
+        """
+        Modifie l'affichage des objets de la classe Configuration 
+        """
+        mot = ''
+        for elem in mot.get_mot():
             mot += elem + " "
-        return "Taille : " + str(self.taille) + " \n  Mot  : " + mot[:-1]
-        
-    
-    
-    def regle_110(self):
-        nouvelle_grille = self.get_ruban()
-        for i in range(self.taille):
-            i0,i1,i2 = (i-1)%self.taille, (i)%self.taille, (i+1)%self.taille
-            etat = (self.get_elem(i0),self.get_elem(i1),self.get_elem(i2))
-            match etat:
-                case ('1','1','1'):
-                    nouvelle_grille[i] = 0
-                case ('1','1','0'):
-                    nouvelle_grille[i] = 1
-                case ('1','0','1'):
-                    nouvelle_grille[i] = 1
-                case ('1','0','0'):
-                    nouvelle_grille[i] = 0
-                case ('0','1','1'):
-                    nouvelle_grille[i] = 1
-                case ('0','1','0'):
-                    nouvelle_grille[i] = 1
-                case ('0','0','1'):
-                    nouvelle_grille[i] = 1
-                case ('0','0','0'):
-                    nouvelle_grille[i] = 0
-        self.set_ruban(nouvelle_grille)
-    
-    def recup(self,automate):
+        return "Taille : " + str(self.get_taille()) + " \n  Mot  : " + mot[:-1]
+
+def recup(fonc):
+    """
+    Permet de récupérer les données
+    """
+    def recup_regle(automate):
+        """
+        Récupère les règles de l'automate cellulaire à parir d'un fichier texte
+        """
+        dico = {}
         with open(automate,'r') as f:
             lignes=f.readlines()
-            code=lignes[:-1]
-            mot=lignes[len(lignes)-1]
-                
-    def un_pas(self):
-        nv_ruban=[]
-        for i in range(len(self.ruban)):
-            if i>0 and i < len(self.ruban)-1:
-                transition=(self.ruban[i-1],self.ruban[i],self.ruban[i+1])
-                nv_ruban.append(self.automate[transition])
-            elif i==0:
-                transition=('0',self.ruban[0],self.ruban[1])
-                nv_ruban.append(self.automate[transition])
-            else:
-                transition=(self.ruban[len(self.ruban)-2],self.ruban[len(self.ruban)-1],'0')
-                nv_ruban.append(self.automate[transition]) 
-        return (nv_ruban,transition)
-        
-    def calcul_automate(self,iteration=None,transition_particuliere=None,succession=None):
-        '''
-        QUESTION 5: : Ecrire une fonction qui prend comme argument un mot et un automate cellulaire et qui 
-                simule le calcul de l'automate. Vous proposerez plusieurs modes pour arrêter le calcul :
-                — apr`es un nombre de pas de calcul donnée
-                — apr`es l'application d'une transition particuli`ere
-                — quand il n y a pas de changements entre deux configurations successives
-        '''
-        
-        if iteration:
-            # print(self.get_mot())
-            print('je suis l iteration')
-            for i in range(iteration):
-                self.ruban=self.un_pas()[0]
-                print(self.get_mot())
-            return self.ruban
-        elif transition_particuliere:
-            print('je suis la transition particulier')
-            print(self.get_mot())
-            self.ruban,transition=self.un_pas()
-            print(self.get_mot())
-            while transition!=transition_particuliere:
-                self.ruban,transition=self.un_pas()
-                print(self.get_mot())
-            return self.ruban
-        elif succession:
-            print('je suis la succession')
-            conf1=self.ruban
-            print(self.get_mot())
-            self.ruban=self.un_pas()[0]
-            conf2=self.ruban
-            print(self.get_mot())
-            print(conf1,conf2)
-            while conf1!=conf2:
-                conf1=conf2
-                self.ruban=self.un_pas()[0]
-                print(self.get_mot())
-                conf2=self.ruban
-                # print(conf1,conf2)
-            return self.ruban
+            for i in range(len(lignes)):
+                elem = lignes[i].replace('\n','').split(' -> ')
+                tuple_key = (elem[0][0],elem[0][2],elem[0][4])
+                dico[tuple_key] = elem[1]
+        return dico
 
-
-if __name__ == '__main__':
-    dico={('1','1','1'):'0',('1','1','0'):'1',('1','0','1'):'1',('1','0','0'):'0',('0','1','1'):'1',('0','1','0'):'1',('0','0','1'):'1',('0','0','0'):'0'}
-    # dico={('1','1','1'):'0',('1','1','0'):'0',('1','0','1'):'0',('1','0','0'):'0',('0','1','1'):'0',('0','1','0'):'0',('0','0','1'):'0',('0','0','0'):'0'}
-    tableau = Grille('0001000',dico)
-    print(tableau.calcul_automate(None,(None),None))
+    def recup_etat_cellule(regle):
+        """
+        Récupère les états possibles des cellules de l'automate cellulaire
+        """
+        etat_cellule = set()
+        for key, value in regle.items():
+            etat_cellule.add(key[0])
+            etat_cellule.add(key[1])
+            etat_cellule.add(key[2])
+            etat_cellule.add(value)
+        return etat_cellule
     
-    # tableau.set_elem(9,2)
-    # print(tableau.ruban)
-    # print(tableau)
-    # recup('auto.txt')
+    if type(fonc) == str:
+        return recup_regle(fonc)
+    elif type(fonc) == dict:
+        return recup_etat_cellule(fonc)
+
+def un_pas(mot : Configuration,automate : Automate):
+    """
+    QUESTION 4 : : Donner une fonction qui prend en argument un automate cellulaire 
+    et une configuration et qui donne la configuration obtenue après un pas de calcul de l’automate.
+    """
+    nv_ruban=[]
+    taille = mot.get_taille()-1
+    for i in range(taille+1):
+        if i>0 and i < taille:
+            transition=(mot.mot[i-1],mot.mot[i],mot.mot[i+1])
+            nv_ruban.append(automate.regle[transition])
+        elif i==0:
+            transition=('0',mot.mot[0],mot.mot[1])
+            nv_ruban.append(automate.regle[transition])
+        else:
+            transition=(mot.mot[len(mot.mot)-2],mot.mot[len(mot.mot)-1],'0')
+            nv_ruban.append(automate.regle[transition]) 
+    return (nv_ruban,transition)
+
+def calcul_automate(mot : Configuration,automate : Automate,iteration=None,transition_particuliere=None,succession=None):
+    '''
+    QUESTION 5: : Ecrire une fonction qui prend comme argument un mot et un automate cellulaire et qui 
+    simule le calcul de l'automate. Vous proposerez plusieurs modes pour arrêter le calcul :
+    — apr`es un nombre de pas de calcul donnée
+    — apr`es l'application d'une transition particuli`ere
+    — quand il n y a pas de changements entre deux configurations successives
+    '''
+      
+    if iteration:
+        print('je suis l iteration')
+        for i in range(iteration):
+            mot.mot=un_pas(mot,auto)[0]
+            print(mot.get_mot())
+        return mot.mot
+    elif transition_particuliere:
+        print('je suis la transition particulier')
+        print(mot.get_mot())
+        mot.mot,transition=un_pas(mot,automate)
+        print(mot.get_mot())
+        while transition!=transition_particuliere:
+            mot.mot,transition=un_pas(mot,automate)
+            print(mot.get_mot())
+        return mot.mot
+    elif succession:
+        print('je suis la succession')
+        conf1=mot.mot
+        print(mot.get_mot())
+        mot.mot=un_pas(mot,auto)[0]
+        conf2=mot.mot
+        print(mot.get_mot())
+        print(conf1,conf2)
+        while conf1!=conf2:
+            conf1=conf2
+            mot.mot=un_pas(mot,auto)[0]
+            print(mot.get_mot())
+            conf2=mot.mot
+            # print(conf1,conf2)
+        return mot.mot
+
+if __name__ == "__main__":
+    auto = Automate()
+    mot = Configuration('0001000')
+    print(un_pas(mot,auto)[0])
+    print(calcul_automate(mot,auto,iteration=5))
     
