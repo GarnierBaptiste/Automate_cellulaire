@@ -1,4 +1,8 @@
 
+from Automate_cellulaire import Automate,calcul_automate
+from Automate_cellulaire import Configuration as conf_auto
+
+
 class Machine_Turing():
     """
     QUESTION 8 :
@@ -99,7 +103,7 @@ def lecture(fichier : str):
             configuration[(ligne[0],ligne[1])] = (ligne[2],ligne[3],ligne[4].replace('\n',''))
         return mot,configuration,etats
 
-def un_pas(mt : Machine_Turing, config : Configuration):
+def un_pas_machine(mt : Machine_Turing, config : Configuration):
     '''
     QUESTION 11 :
     Fonction qui donne la configuration obtenue après un pas de calcul de la machine.
@@ -119,20 +123,65 @@ def un_pas(mt : Machine_Turing, config : Configuration):
             pass
     config.set_etat_actuel(mt.get_regle()[etat][0])
 
-def calcul(mt : Machine_Turing, config : Configuration):
+def calcul_machine(mt : Machine_Turing, config : Configuration):
     '''
     QUESTION 12 :
     fonction qui simule le calcul de la machine sur le mot
     '''
     while (config.get_etat_actuel(),config.get_ruban()[config.get_curseur()]) in mt.get_regle().keys():
-        un_pas(mt,config)
+        un_pas_machine(mt,config)
     return config.get_etat_actuel() == 'accept'
 
-def simulation(mt:Machine_Turing):
-    automate=automate
 
+def simulation(mt:Machine_Turing):
+    etats=set()
+    for lettre in mt.alphabet:
+        etats.add(('*',lettre))
+        for etat in mt.etat:
+            etats.add((etat,lettre))
+    regles={}
+    print(mt.regle)
+    with open('mt_simulation.txt','w') as f:
+        for transi,res in mt.regle.items():
+            q,l=transi
+            q2,futur_l,d=res
+            for i in range(3):
+                for l1 in mt.alphabet:
+                    for l2 in mt.alphabet:
+                        liste=[0,0,0]
+                        liste[i]=(q,l)
+                        liste[(i+1)%3]=('*',l1)
+                        liste[(i+2)%3]=('*',l2)
+                        if i==0:
+                            if d=='>':
+                                regles[tuple(liste)]=('*',futur_l) 
+                                f.write(str(tuple(liste))+':'+str((res[0],liste[1][1])))
+                            else:
+                                regles[tuple(liste)]=(liste[0])   
+                                f.write(str()) 
+                        if i==1:
+                            regles[tuple(liste)]=('*',res[1])
+                            f.write(str(tuple(liste))+':'+str(('*',res[1])) )
+                        
+                        if i==2:
+                            if d=='<':
+                                regles[tuple(liste)]=(res[0],liste[1][1])  
+                                f.write(str(tuple(liste))+':'+str((res[0],liste[1][1])) ) 
+                            else:
+                                regles[tuple(liste)]=(liste[2]) 
+                                f.write(str(tuple(liste))+':'+str(liste[2])) 
+                        regles[tuple(liste)]=(res[0],liste[1][1]) 
+                        f.write('\n')        
+    automate=Automate(etats,regles)
+    conf=conf_auto('00100')
+    conf_mt=Configuration('00100',0,'q0')
+    print(calcul_machine(mt,conf_mt))
+    print(calcul_automate(conf,automate,None,None,True))
+    
+                    
 if __name__ == "__main__":
     lec = lecture('Fichier_Texte\Machine_Turing.txt')
     mt = Machine_Turing(lec[1],lec[2],lec[2][0])
     config = Configuration(lec[0],0,mt.get_etat_initial())
-    print(calcul(mt,config))
+    simulation(mt)
+

@@ -143,7 +143,7 @@ def un_pas(conf : Configuration,automate : Automate):
             nv_ruban.append(automate.regle[transition]) 
     return (nv_ruban,transition)
 
-def calcul_automate(conf:Configuration,automate:Automate,iteration : int = None,transition_particuliere : bool = None,succession : bool = None):
+def calcul_automate(conf:Configuration,automate:Automate,iteration : int = None,transition_particuliere : tuple = None,succession : bool = None):
     """
     QUESTION 5 :
     Ecrire une fonction qui prend comme argument un mot et un automate cellulaire et qui 
@@ -178,13 +178,14 @@ def calcul_automate(conf:Configuration,automate:Automate,iteration : int = None,
         print('je suis la succession')
         conf1 = conf.get_mot()
         print(conf.get_joli_mot())
-        conf.set_mot(un_pas(conf,auto)[0])
+        print('step1')
+        conf.set_mot(un_pas(conf,automate)[0])
         conf2 = conf.get_mot()
-        print(conf.get_joli_mot())
+        print('step2',conf.get_joli_mot())
         print(conf1,conf2)
         while conf1!=conf2:
             conf1 = conf2
-            conf.set_mot(un_pas(conf,auto)[0])
+            conf.set_mot(un_pas(conf,automate)[0])
             print(conf.get_joli_mot())
             conf2 = conf.get_mot()
         return conf.get_mot()
