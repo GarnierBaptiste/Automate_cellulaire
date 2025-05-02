@@ -48,6 +48,12 @@ class Configuration:
     
     def get_mot(self):
         """
+        Renvoie la liste qui correspond au mot de l'élément
+        """
+        return self.mot
+    
+    def get_joli_mot(self):
+        """
         Permet de passer d'une liste a un str c'est a dire que si j'ai 
         ['1','0','1','1,'] la fonction renvoie '1011'
         """
@@ -56,12 +62,18 @@ class Configuration:
             nv_mot+=lettre
         return nv_mot
     
+    def set_mot(self, nouv_mot):
+        """
+        Modifie l'attribut mot de l'element
+        """
+        self.mot = nouv_mot
+    
     def __str__(self):
         """
         Modifie l'affichage des objets de la classe Configuration 
         """
         mot = ''
-        for elem in self.get_mot():
+        for elem in self.get_joli_mot():
             mot += elem + " "
         return "Taille : " + str(self.get_taille()) + " \n  Mot  : " + mot[:-1]
 
@@ -118,13 +130,13 @@ def un_pas(mot : Configuration,automate : Automate):
     taille = mot.get_taille()-1
     for i in range(taille+1):
         if i>0 and i < taille:
-            transition=(mot.mot[i-1],mot.mot[i],mot.mot[i+1])
+            transition=(mot.get_mot()[i-1],mot.get_mot()[i],mot.get_mot()[i+1])
             nv_ruban.append(automate.regle[transition])
         elif i==0:
-            transition=('0',mot.mot[0],mot.mot[1])
+            transition=('0',mot.get_mot()[0],mot.get_mot()[1])
             nv_ruban.append(automate.regle[transition])
         else:
-            transition=(mot.mot[len(mot.mot)-2],mot.mot[len(mot.mot)-1],'0')
+            transition=(mot.get_mot()[len(mot.get_mot())-2],mot.get_mot()[len(mot.get_mot())-1],'0')
             nv_ruban.append(automate.regle[transition]) 
     return (nv_ruban,transition)
 
@@ -141,36 +153,38 @@ def calcul_automate(mot:Configuration,automate:Automate,iteration : int = None,t
     Modifier la fonction précédente pour que, à chaque pas de simulation, la configuration 
     de l'automate s'affiche de manière compréhensible
     """
-    print(mot.get_mot())
+    print(mot.get_joli_mot())
     if iteration:
         print('je suis l iteration')
         for i in range(iteration):
-            mot.mot=un_pas(mot,auto)[0]
-            print(mot.get_mot())
-        return mot.mot
+            mot.set_mot(un_pas(mot,auto)[0])
+            print(mot.get_joli_mot())
+        return mot.get_mot()
     elif transition_particuliere:
         print('je suis la transition particulier')
-        print(mot.get_mot())
-        mot.mot,transition=un_pas(mot,automate)
-        print(mot.get_mot())
+        print(mot.get_joli_mot())
+        mot.get_mot(),transition = un_pas(mot,automate)
+        print(mot.get_joli_mot())
         while transition!=transition_particuliere:
-            mot.mot,transition=un_pas(mot,automate)
-            print(mot.get_mot())
-        return mot.mot
+            pas = un_pas(mot,automate)
+            mot.set_mot(pas[0])
+            transition = pas[1]
+            print(mot.get_joli_mot())
+        return mot.get_mot()
     elif succession:
         print('je suis la succession')
-        conf1=mot.mot
-        print(mot.get_mot())
-        mot.mot=un_pas(mot,auto)[0]
-        conf2=mot.mot
-        print(mot.get_mot())
+        conf1 = mot.get_mot()
+        print(mot.get_joli_mot())
+        mot.set_mot(un_pas(mot,auto)[0])
+        conf2 = mot.get_mot()
+        print(mot.get_joli_mot())
         print(conf1,conf2)
         while conf1!=conf2:
             conf1 = conf2
-            mot.mot=un_pas(mot,auto)[0]
-            print(mot.get_mot())
-            conf2 = mot.mot
-        return mot.mot
+            mot.set_mot(un_pas(mot,auto)[0])
+            print(mot.get_joli_mot())
+            conf2 = mot.get_mot()
+        return mot.get_mot()
 
 
 if __name__ == "__main__":

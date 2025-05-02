@@ -142,4 +142,6 @@ if __name__ == "__main__":
     lec = lecture('Fichier_Texte\Machine_Turing.txt')
     mt = Machine_Turing(lec[2],lec[0])
     config = Configuration(lec[1])
-    print(calcul(mt,config))
+    print(mt.ruban)
+    calcul(mt,config)
+    print(mt.ruban)
