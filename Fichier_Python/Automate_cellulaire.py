@@ -3,12 +3,12 @@ class Automate:
     QUESTION 1 :
     Proposer une structure de données qui permet de représenter un automate cellulaire. 
     """
-    def __init__(self,transition,etats):
+    def __init__(self,etats,transitions):
         """
         Constructeur pour la classe Automate
         """
         self.etat_cellules = etats
-        self.transition = transition
+        self.regle = transitions
         
 
     def get_regles(self):
@@ -106,10 +106,11 @@ def recup(fonc):
             etat_cellule.add(value)
         return etat_cellule
     
-    if type(fonc) == str:
-        return recup_regle(fonc)
-    elif type(fonc) == dict:
-        return recup_etat_cellule(fonc)
+    return (recup_etat_cellule(recup_regle(fonc)),recup_regle(fonc))
+    # if type(fonc) == str:
+    #     return recup_regle(fonc)
+    # elif type(fonc) == dict:
+    #     return recup_etat_cellule(fonc)
     
 def initialisation(nom_fichier, mot_entre : str):
     """
@@ -117,31 +118,32 @@ def initialisation(nom_fichier, mot_entre : str):
     Ecrire une fonction qui lit un fichier texte contenant le code d'un automate cellulaire 
     et un d'mot d'entrée et qui initialise la structure de données pour représenter cet automate.
     """
-    auto = Automate(nom_fichier)
+    etats,regles=recup(nom_fichier)
+    auto = Automate(etats,regles)
     mot = Configuration(mot_entre)
     return auto,mot
 
-def un_pas(mot : Configuration,automate : Automate):
+def un_pas(conf : Configuration,automate : Automate):
     """
     QUESTION 4 : 
     Donner une fonction qui prend en argument un automate cellulaire et une configuration 
     et qui donne la configuration obtenue après un pas de calcul de l'automate.
     """
     nv_ruban=[]
-    taille = mot.get_taille()-1
+    taille = conf.get_taille()-1
     for i in range(taille+1):
         if i>0 and i < taille:
-            transition=(mot.get_mot()[i-1],mot.get_mot()[i],mot.get_mot()[i+1])
+            transition=(conf.get_mot()[i-1],conf.get_mot()[i],conf.get_mot()[i+1])
             nv_ruban.append(automate.regle[transition])
         elif i==0:
-            transition=('0',mot.get_mot()[0],mot.get_mot()[1])
+            transition=('0',conf.get_mot()[0],conf.get_mot()[1])
             nv_ruban.append(automate.regle[transition])
         else:
-            transition=(mot.get_mot()[len(mot.get_mot())-2],mot.get_mot()[len(mot.get_mot())-1],'0')
+            transition=(conf.get_mot()[len(conf.get_mot())-2],conf.get_mot()[len(conf.get_mot())-1],'0')
             nv_ruban.append(automate.regle[transition]) 
     return (nv_ruban,transition)
 
-def calcul_automate(mot:Configuration,automate:Automate,iteration : int = None,transition_particuliere : bool = None,succession : bool = None):
+def calcul_automate(conf:Configuration,automate:Automate,iteration : int = None,transition_particuliere : bool = None,succession : bool = None):
     """
     QUESTION 5 :
     Ecrire une fonction qui prend comme argument un mot et un automate cellulaire et qui 
@@ -154,41 +156,42 @@ def calcul_automate(mot:Configuration,automate:Automate,iteration : int = None,t
     Modifier la fonction précédente pour que, à chaque pas de simulation, la configuration 
     de l'automate s'affiche de manière compréhensible
     """
-    print(mot.get_joli_mot())
+    print(conf.get_joli_mot())
     if iteration:
         print('je suis l iteration')
-        for i in range(iteration):
-            mot.set_mot(un_pas(mot,auto)[0])
-            print(mot.get_joli_mot())
-        return mot.get_mot()
+        for _ in range(iteration):
+            conf.set_mot(un_pas(conf,auto)[0])
+            print(conf.get_joli_mot())
+        return conf.get_mot()
     elif transition_particuliere:
         print('je suis la transition particulier')
-        print(mot.get_joli_mot())
-        mot.get_mot(),transition = un_pas(mot,automate)
-        print(mot.get_joli_mot())
+        print(conf.get_joli_mot())
+        nv_conf,transition = un_pas(conf,automate)
+        conf=Configuration(nv_conf)
         while transition!=transition_particuliere:
-            pas = un_pas(mot,automate)
-            mot.set_mot(pas[0])
+            pas = un_pas(conf,automate)
+            conf.set_mot(pas[0])
             transition = pas[1]
-            print(mot.get_joli_mot())
-        return mot.get_mot()
+            print(conf.get_joli_mot())
+        return conf.get_mot()
     elif succession:
         print('je suis la succession')
-        conf1 = mot.get_mot()
-        print(mot.get_joli_mot())
-        mot.set_mot(un_pas(mot,auto)[0])
-        conf2 = mot.get_mot()
-        print(mot.get_joli_mot())
+        conf1 = conf.get_mot()
+        print(conf.get_joli_mot())
+        conf.set_mot(un_pas(conf,auto)[0])
+        conf2 = conf.get_mot()
+        print(conf.get_joli_mot())
         print(conf1,conf2)
         while conf1!=conf2:
             conf1 = conf2
-            mot.set_mot(un_pas(mot,auto)[0])
-            print(mot.get_joli_mot())
-            conf2 = mot.get_mot()
-        return mot.get_mot()
+            conf.set_mot(un_pas(conf,auto)[0])
+            print(conf.get_joli_mot())
+            conf2 = conf.get_mot()
+        return conf.get_mot()
 
 
 if __name__ == "__main__":
     auto, config = initialisation('Fichier_Texte\Automate_cyclique.txt','0001000')
-    calcul_automate(config,auto,iteration = 10)
+    calcul_automate(config,auto,None,None,True)
+    
     
