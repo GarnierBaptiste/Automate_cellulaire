@@ -1,97 +1,47 @@
 import sys
 import inspect
-import time
-import kivy
+from Automate_cellulaire import Automate,Configuration_Automate,initialisation,un_pas_automate,calcul_automate_q5,calcul_automate_q6
+from Machine_Turing import Machine_Turing#,Configuration_Machine,initialisation_machine_turing,un_pas_machine_turing,calcul_machine_turing_q5,calcul_machine_turing_q6
 
-def exo1():
-    pass
-
-def exo2():
-    pass
-
-def exo3():
-    pass
-
-def exo4():
-    pass
-
-def exo5():
-    pass
-
-def exo6():
-    pass
-
-def exo7():
-    pass
-
-def exo8():
-    pass
-
-def exo9():
-    pass
-
-def exo10():
-    pass
-
-def exo11():
-    pass
-
-def exo12():
-    pass
-
-def exo13():
-    pass
-
-def exo14():
-    pass
-
-def affichage():
-    pass
-
-fonc = sys.argv[1]
-match fonc:
+fonc = sys.argv
+print(fonc)
+match fonc[1]:
     case "exo0":
-        exo1()
-        exo2()
-        exo3()
-        exo4()
-        exo5()
-        exo6()
-        exo7()
-        exo8()
-        exo9()
-        exo10()
-        exo11()
-        exo12()
-        exo13()
-        exo14()
+        print("coucou")
     case "exo1":
-        exo1()
+        print(inspect.getsource(Automate))
     case "exo2":
-        exo2()
+        print(inspect.getsource(Configuration_Automate))
     case "exo3":
-        exo3()
+        print(inspect.getsource(initialisation))
+        if len(sys.argv[1:]) > 1:
+            mode = fonc[2]
+            try :
+                mot = fonc[3]
+            except:
+                mot = "10021"
+            print(f'\nTest de la fonction :\n   On utilise les règles écrites dans le fichier "Automate_cellulaire.txt" qui se situe dans le dossier Fichier_Texte et le mot {mot} choisi arbitrairement.\n')
+            auto,config = initialisation("Fichier_Texte/Automate_cellulaire.txt","10021")
+            print(auto)
     case "exo4":
-        exo4()
+        print(inspect.getsource(un_pas_automate))
     case "exo5":
-        exo5()
+        print(inspect.getsource(calcul_automate_q5))
     case "exo6":
-        exo6()
+        print(inspect.getsource(calcul_automate_q6))
     case "exo7":
-        exo7()
+        pass
     case "exo8":
-        exo8()
+        print(inspect.getsource(Machine_Turing))
     case "exo9":
-        exo9()
+        print(inspect.getsource(Configuration_Machine))
     case "exo10":
-        exo10()
+        pass
     case "exo11":
-        exo11()
+        pass
     case "exo12":
-        exo12()
+        pass
     case "exo13":
-        exo13()
+        pass
     case "exo14":
-        exo14()
-    case "exoI":
-        affichage()
+        pass
