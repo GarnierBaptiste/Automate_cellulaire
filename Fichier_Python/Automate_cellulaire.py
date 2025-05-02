@@ -3,12 +3,13 @@ class Automate:
     QUESTION 1 :
     Proposer une structure de données qui permet de représenter un automate cellulaire. 
     """
-    def __init__(self,nom_fichier):
+    def __init__(self,transition,etats):
         """
         Constructeur pour la classe Automate
         """
-        self.regle = recup(nom_fichier)
-        self.etat_cellules = recup(self.regle)
+        self.etat_cellules = etats
+        self.transition = transition
+        
 
     def get_regles(self):
         """

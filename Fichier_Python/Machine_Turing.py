@@ -141,6 +141,9 @@ def calcul(mt : Machine_Turing, config : Configuration):
         un_pas(mt,config)
     return mt.get_etat_actuel() == mt.get_etat_final()
 
+def simulation(mt:Machine_Turing):
+    automate=automate
+
 if __name__ == "__main__":
     lec = lecture('Fichier_Texte\Machine_Turing.txt')
     mt = Machine_Turing(lec[2],lec[0])
