@@ -10,16 +10,16 @@ class Machine_Turing():
         - l'etat actuel lors du parcours du ruban
         - le curseur qui represente la position dans le ruban
     """
-    def __init__(self,etats,mot):
+    def __init__(self,conf : dict,etats,q0,mot):
         """
         Constructeur pour la classe Machine_Turing
         """
-        self.ruban = [elem for elem in mot]
         self.alphabet= set()
+        self.transition=conf
         self.etat = set(etats)
-        self.etat_actuel = etats[0]
-        self.etat_final = etats[1]
-        self.curseur = 0
+        self.etat_initiale=q0
+        self.deplacement={'<','_','>'}
+        
 
     def get_ruban(self):
         """
@@ -74,11 +74,14 @@ class Configuration():
     QUESTION 9 :
     Classe qui represente les configurations de la machine de turing
     '''
-    def __init__(self,conf : dict):
+    def __init__(self,mot,curseur,etat):
         """
         Constructeur pour la classe Configuration
         """
-        self.configuration = conf
+        self.ruban = [elem for elem in mot]
+        self.curseur=curseur
+        self.etat_actuel=etat
+
 
     def get_configuration(self):
         """
@@ -142,6 +145,4 @@ if __name__ == "__main__":
     lec = lecture('Fichier_Texte\Machine_Turing.txt')
     mt = Machine_Turing(lec[2],lec[0])
     config = Configuration(lec[1])
-    print(mt.ruban)
-    calcul(mt,config)
-    print(mt.ruban)
+    print(calcul(mt,config))
