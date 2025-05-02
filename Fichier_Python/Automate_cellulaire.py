@@ -56,6 +56,9 @@ class Configuration_Automate:
         Modifie l'attribut mot de l'element
         """
         self.mot = nouv_mot
+
+    def __str__(self):
+        return f"La configuration est :\n  Le mot => {''.join(self.mot)}"
     
 def initialisation(nom_fichier, mot_entre : str):
     """
@@ -109,13 +112,22 @@ def un_pas_automate(conf : Configuration_Automate,automate : Automate):
     for i in range(taille+1):
         if i>0 and i < taille:
             transition=(conf.get_mot()[i-1],conf.get_mot()[i],conf.get_mot()[i+1])
-            nv_ruban.append(automate.get_regles()[transition])
+            if transition not in automate.get_regles().keys():
+                nv_ruban.append(conf.get_mot()[i])
+            else:
+                nv_ruban.append(automate.get_regles()[transition])
         elif i==0:
             transition=('0',conf.get_mot()[0],conf.get_mot()[1])
-            nv_ruban.append(automate.get_regles()[transition])
+            if transition not in automate.get_regles().keys():
+                nv_ruban.append(conf.get_mot()[i])
+            else:
+                nv_ruban.append(automate.get_regles()[transition])
         else:
             transition=(conf.get_mot()[len(conf.get_mot())-2],conf.get_mot()[len(conf.get_mot())-1],'0')
-            nv_ruban.append(automate.get_regles()[transition]) 
+            if transition not in automate.get_regles().keys():
+                nv_ruban.append(conf.get_mot()[i])
+            else:
+                nv_ruban.append(automate.get_regles()[transition]) 
     return (nv_ruban,transition)
 
 def calcul_automate_q5(conf:Configuration_Automate,automate:Automate,iteration : int = None,transition_particuliere : bool = None,succession : bool = None):
@@ -127,6 +139,7 @@ def calcul_automate_q5(conf:Configuration_Automate,automate:Automate,iteration :
     — apr`es l'application d'une transition particulière
     — quand il n y a pas de changements entre deux configurations successives
     """
+    i = 0
     if iteration:
         for _ in range(iteration):
             conf.set_mot(un_pas_automate(conf,automate)[0])
@@ -134,10 +147,14 @@ def calcul_automate_q5(conf:Configuration_Automate,automate:Automate,iteration :
     elif transition_particuliere:
         nv_conf,transition = un_pas_automate(conf,automate)
         conf=Configuration_Automate(nv_conf)
+        print(transition)
         while transition!=transition_particuliere:
             pas = un_pas_automate(conf,automate)
             conf.set_mot(pas[0])
             transition = pas[1]
+            if i > len(automate.get_regles()):
+                return f"La trasition {transition_particuliere} n'a jamais été appliquée"
+            i += 1
         return conf.get_mot()
     elif succession:
         conf1 = conf.get_mot()
@@ -147,6 +164,9 @@ def calcul_automate_q5(conf:Configuration_Automate,automate:Automate,iteration :
             conf1 = conf2
             conf.set_mot(un_pas_automate(conf,automate)[0])
             conf2 = conf.get_mot()
+            if i > len(automate.get_regles()):
+                return "La configuration ne devient pas un stable"
+            i += 1
         return conf.get_mot()
     
 def calcul_automate_q6(conf:Configuration_Automate,automate:Automate,iteration : int = None,transition_particuliere : bool = None,succession : bool = None):
@@ -187,3 +207,7 @@ def calcul_automate_q6(conf:Configuration_Automate,automate:Automate,iteration :
             print(conf.get_mot(1))
             conf2 = conf.get_mot()
         return conf.get_mot()
+
+if __name__ == "__main__":
+    auto, config = initialisation("Fichier_Texte/Automate_cellulaire.txt","10011")
+    calcul_automate_q6(config,auto,transition_particuliere=('1','0','0'))

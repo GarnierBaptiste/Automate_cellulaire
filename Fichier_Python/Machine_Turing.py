@@ -1,6 +1,6 @@
 
-from Automate_cellulaire import Automate,calcul_automate
-from Automate_cellulaire import Configuration as conf_auto
+from Automate_cellulaire import Automate,calcul_automate_q5
+from Automate_cellulaire import Configuration_Automate as conf_auto
 
 
 class Machine_Turing():
@@ -34,7 +34,7 @@ class Machine_Turing():
         """
         return self.etat_initiale
 
-class Configuration():
+class Configuration_Machine():
     '''
     QUESTION 9 :
     Classe qui represente les configurations de la machine de turing
@@ -103,7 +103,7 @@ def lecture(fichier : str):
             configuration[(ligne[0],ligne[1])] = (ligne[2],ligne[3],ligne[4].replace('\n',''))
         return mot,configuration,etats
 
-def un_pas_machine(mt : Machine_Turing, config : Configuration):
+def un_pas_machine(mt : Machine_Turing, config : Configuration_Machine):
     '''
     QUESTION 11 :
     Fonction qui donne la configuration obtenue après un pas de calcul de la machine.
@@ -123,7 +123,7 @@ def un_pas_machine(mt : Machine_Turing, config : Configuration):
             pass
     config.set_etat_actuel(mt.get_regle()[etat][0])
 
-def calcul_machine(mt : Machine_Turing, config : Configuration):
+def calcul_machine(mt : Machine_Turing, config : Configuration_Machine):
     '''
     QUESTION 12 :
     fonction qui simule le calcul de la machine sur le mot
@@ -174,14 +174,14 @@ def simulation(mt:Machine_Turing):
                         f.write('\n')        
     automate=Automate(etats,regles)
     conf=conf_auto('00100')
-    conf_mt=Configuration('00100',0,'q0')
+    conf_mt=Configuration_Machine('00100',0,'q0')
     print(calcul_machine(mt,conf_mt))
-    print(calcul_automate(conf,automate,None,None,True))
+    print(calcul_automate_q5(conf,automate,None,None,True))
     
                     
-if __name__ == "__main__":
-    lec = lecture('Fichier_Texte\Machine_Turing.txt')
-    mt = Machine_Turing(lec[1],lec[2],lec[2][0])
-    config = Configuration(lec[0],0,mt.get_etat_initial())
-    simulation(mt)
+# if __name__ == "__main__":
+#     lec = lecture('Fichier_Texte\Machine_Turing.txt')
+#     mt = Machine_Turing(lec[1],lec[2],lec[2][0])
+#     config = Configuration_Machine(lec[0],0,mt.get_etat_initial())
+#     simulation(mt)
 

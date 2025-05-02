@@ -8,13 +8,13 @@ Question2:
 	python3 Fichier_Python/Choix_Question.py exo2
 
 Question3:
-	python3 Fichier_Python/Choix_Question.py exo3 $(Mode) $(Mot)
+	python3 Fichier_Python/Choix_Question.py exo3 $(Mode) $(Mot)  
 
 Question4:
-	python3 Fichier_Python/Choix_Question.py exo4
+	python3 Fichier_Python/Choix_Question.py exo4 $(Mode) $(Mot) 
 
 Question5:
-	python3 Fichier_Python/Choix_Question.py exo5
+	python3 Fichier_Python/Choix_Question.py exo5 $(Mode) $(Mot) $(Valeur)
 	
 Question6:	
 	python3 Fichier_Python/Choix_Question.py exo6
