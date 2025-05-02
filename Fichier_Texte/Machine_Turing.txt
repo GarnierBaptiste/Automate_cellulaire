@@ -1,6 +1,6 @@
-aab
+1001
 q0
 accept
-q0,a,q0,a,>
-q0,b,q1,b,>
-q1,_,accept,_,_
+q0,0,q0,1,>
+q0,1,q0,0,>
+q0,_,accept,_,_

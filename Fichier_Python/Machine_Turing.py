@@ -3,71 +3,32 @@ class Machine_Turing():
     """
     QUESTION 8 :
     Classe qui represente la machine de turing avec:
-        - un ruban: qui contient le mot
         - alphabet: l'aphabet de la machine
         - les états
         - l'etat finale qui accept le mot
         - l'etat actuel lors du parcours du ruban
         - le curseur qui represente la position dans le ruban
     """
-    def __init__(self,conf : dict,etats,q0,mot):
+    def __init__(self,conf : dict,etats,q0):
         """
         Constructeur pour la classe Machine_Turing
         """
-        self.alphabet= set()
-        self.transition=conf
+        self.alphabet = {'0','1','_'}
+        self.regle = conf
         self.etat = set(etats)
-        self.etat_initiale=q0
-        self.deplacement={'<','_','>'}
-        
+        self.etat_initiale = q0
 
-    def get_ruban(self):
+    def get_regle(self):
         """
-        Renvoie le ruban de la machine de turing
+        Permet de récupérer les règles de la machine de turing
         """
-        return self.ruban
+        return self.regle
     
-    def set_ruban(self,ruban):
+    def get_etat_initial(self):
         """
-        Permet de modifier le ruban
+        Permet de récupérer l'état initial de la machine de turing
         """
-        self.ruban = ruban
-    
-    def set_elem(self,curseur,elem):
-        """
-        Permet de modifier un element du ruban
-        """
-        self.ruban[curseur] = elem
-
-    def get_etat_actuel(self):
-        """
-        Renvoie l'etat actuel de la machine de turing
-        """
-        return self.etat_actuel
-    
-    def set_etat_actuel(self,etat):
-        """
-        Permet de modifier l'etat actuel de la machine de turing
-        """
-        self.etat_actuel = etat
-    
-    def get_etat_final(self):
-        """
-        Renvoie l'etat final de la machine de turing
-        """
-        return self.etat_final
-    
-    def get_curseur(self):
-        """
-        Renvoie la position du curseur
-        """
-        return self.curseur
-    
-    def add_curseur(self, nb):
-        """
-        Permet de deplacer le curseur
-        """
-        self.curseur += nb
+        return self.etat_initiale
 
 class Configuration():
     '''
@@ -79,15 +40,44 @@ class Configuration():
         Constructeur pour la classe Configuration
         """
         self.ruban = [elem for elem in mot]
-        self.curseur=curseur
-        self.etat_actuel=etat
-
-
-    def get_configuration(self):
+        self.curseur = curseur
+        self.etat_actuel = etat
+    
+    def get_ruban(self):
         """
-        Renvoie les configurations de la machine de turing
+        Permet de récupérer la configuration
         """
-        return self.configuration
+        return self.ruban
+    
+    def set_ruban(self, nouv_ruban):
+        """
+        Permet de modifier la configuration
+        """
+        self.ruban = nouv_ruban
+
+    def set_ruban_pos(self,elem,pos):
+        """
+        Permet de modifier la configuration à la position pos
+        """
+        self.ruban[pos] = elem
+    
+    def get_curseur(self):
+        """
+        Permet de récupérer la position du curseur de la configuration
+        """
+        return self.curseur
+    
+    def get_etat_actuel(self):
+        """
+        Permet de récupérer l'état actuel de la configuration
+        """
+        return self.etat_actuel
+    
+    def set_etat_actuel(self, nouv_etat):
+        """
+        Permet de modifier l'état actuel de la configuration
+        """
+        self.etat_actuel = nouv_etat
         
 def lecture(fichier : str):
     '''
@@ -108,44 +98,41 @@ def lecture(fichier : str):
             etats.append(ligne[2])
             configuration[(ligne[0],ligne[1])] = (ligne[2],ligne[3],ligne[4].replace('\n',''))
         return mot,configuration,etats
-        
 
 def un_pas(mt : Machine_Turing, config : Configuration):
     '''
     QUESTION 11 :
-    Fonction qui donne la configuration obtenue apr`es un pas de calcul de la machine.
+    Fonction qui donne la configuration obtenue après un pas de calcul de la machine.
     '''
-    etat = (mt.get_etat_actuel(),mt.get_ruban()[mt.get_curseur()])
-    mt.set_elem(mt.get_curseur(),config.get_configuration()[etat][1])
-    # mt.ruban[mt.get_curseur()] = config.get_configuration()[etat][1]
-    match config.get_configuration()[etat][2]:
+    etat = (config.get_etat_actuel(),config.get_ruban()[config.get_curseur()])
+    config.set_ruban_pos(mt.get_regle()[etat][1],config.get_curseur())
+    match mt.get_regle()[etat][2]:
         case '<':
-            if mt.get_curseur() > 0:
-                mt.add_curseur(-1)
-            else:
-                mt.set_ruban(['_'] + mt.get_ruban())
+            config.curseur += -1
+            if not config.get_curseur() > 0:
+                config.set_ruban(['_'] + config.get_ruban())
         case '>':
-            mt.add_curseur(1)
-            if mt.get_curseur() >= len(mt.ruban):
-                mt.set_ruban(mt.get_ruban() + ['_'])
+            config.curseur += 1
+            if not config.get_curseur() < len(config.get_ruban()):
+                config.set_ruban(config.get_ruban() + ['_'])
         case '_':
             pass
-    mt.set_etat_actuel(config.get_configuration()[etat][0])
+    config.set_etat_actuel(mt.get_regle()[etat][0])
 
 def calcul(mt : Machine_Turing, config : Configuration):
     '''
     QUESTION 12 :
     fonction qui simule le calcul de la machine sur le mot
     '''
-    while (mt.get_etat_actuel(),mt.get_ruban()[mt.get_curseur()]) in config.get_configuration().keys():
+    while (config.get_etat_actuel(),config.get_ruban()[config.get_curseur()]) in mt.get_regle().keys():
         un_pas(mt,config)
-    return mt.get_etat_actuel() == mt.get_etat_final()
+    return config.get_etat_actuel() == 'accept'
 
 def simulation(mt:Machine_Turing):
     automate=automate
 
 if __name__ == "__main__":
     lec = lecture('Fichier_Texte\Machine_Turing.txt')
-    mt = Machine_Turing(lec[2],lec[0])
-    config = Configuration(lec[1])
+    mt = Machine_Turing(lec[1],lec[2],lec[2][0])
+    config = Configuration(lec[0],0,mt.get_etat_initial())
     print(calcul(mt,config))
