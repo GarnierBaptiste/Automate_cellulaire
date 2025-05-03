@@ -53,17 +53,14 @@ class Configuration_Machine():
         """
         return self.ruban
     
-    def set_ruban(self, nouv_ruban):
-        """
-        Permet de modifier la configuration
-        """
-        self.ruban = nouv_ruban
-
-    def set_ruban_pos(self,elem,pos):
+    def set_ruban(self, nouv, pos=None):
         """
         Permet de modifier la configuration à la position pos
         """
-        self.ruban[pos] = elem
+        if pos:
+            self.ruban = nouv
+        else:
+            self.ruban[pos]
     
     def get_curseur(self):
         """
@@ -109,7 +106,7 @@ def un_pas_machine(mt : Machine_Turing, config : Configuration_Machine):
     Fonction qui donne la configuration obtenue après un pas de calcul de la machine.
     '''
     etat = (config.get_etat_actuel(),config.get_ruban()[config.get_curseur()])
-    config.set_ruban_pos(mt.get_regle()[etat][1],config.get_curseur())
+    config.set_ruban(mt.get_regle()[etat][1],config.get_curseur())
     match mt.get_regle()[etat][2]:
         case '<':
             config.curseur += -1

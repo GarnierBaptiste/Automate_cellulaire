@@ -25,7 +25,7 @@ class Automate:
         mot = ''
         for key, value in self.regle.items():
             mot += f"{key[0]} {key[1]} {key[2]} -> {value}\n" + "                     "
-        return f"L'automate cellulaire est :\n  Les tats possibles => {self.etat_cellules}\n  Les regles disponibles => {mot}"
+        return f"L'automate cellulaire est :\n  Les états possibles => {self.etat_cellules}\n  Les regles disponibles => {mot}"
 
 class Configuration_Automate:
     """
@@ -59,8 +59,8 @@ class Configuration_Automate:
         """
         self.mot = nouv_mot
 
-    # def __str__(self):
-    #     return f"La configuration est :\n  Le mot => {''.join(self.mot)}"
+    def __str__(self):
+        return f"La configuration est :\n  Le mot => {self.get_mot(1)}"
     
 def initialisation(nom_fichier, mot_entre : str):
     """
@@ -98,55 +98,53 @@ def initialisation(nom_fichier, mot_entre : str):
         
         return (recup_etat_cellule(recup_regle(fonc)),recup_regle(fonc))
 
-    etats,regles=recup(nom_fichier)
+    etats,regles = recup(nom_fichier)
     auto = Automate(etats,regles)
     mot = Configuration_Automate(mot_entre)
     return auto,mot
 
-def un_pas_automate(conf : Configuration_Automate,automate : Automate,simulation:bool):
+def un_pas_automate(conf : Configuration_Automate,automate : Automate,simulation:bool = False):
     """
     QUESTION 4 : 
     Donner une fonction qui prend en argument un automate cellulaire et une configuration 
     et qui donne la configuration obtenue après un pas de calcul de l'automate.
     """
-    nv_ruban=[]
+    nv_ruban = []
     taille = conf.get_taille()
-    mot=conf.get_mot()
-    
+    mot = conf.get_mot()
     if not simulation:
         for i in range(taille):
-            if i>0 and i < taille:
-                transition=(mot[i-1],mor[i],mor[i+1])
-            elif i==0:
-                transition=('0',mot[0],mot[1])
+            if i>0 and i < taille-1:
+                transition = (mot[i-1],mot[i],mot[i+1])
+            elif i == 0:
+                transition = ('0',mot[0],mot[1])
             else:
-                transition=(mot[len(mot)-2],mot[len(mot)-1],'0')
-        if transition not in automate.get_regles().keys():
-            nv_ruban.append(mot[i])
-        else:
-            nv_ruban.append(automate.get_regles()[transition])
+                transition = (mot[len(mot)-2],mot[len(mot)-1],'0')
+            if transition not in automate.get_regles().keys():
+                nv_ruban.append(mot[i])
+            else:
+                nv_ruban.append(automate.get_regles()[transition])
     #partie pour traiter la simulation d'une Machine de turing en Automate Cellulaire
     if simulation:
         #permet d'avoir une liste de tuple tel que (('q0','1),('*',1'),..) et non ("('q0',1),('*','1'),...)")
         nouvelle_conf = [ast.literal_eval(item) for item in tuple(mot)]
         for i in range(taille+1):
             if i>0 and i < taille:
-                transition=(nouvelle_conf[i-1],nouvelle_conf[i],nouvelle_conf[i+1])
-            elif i==0:
-                transition=(('*','_'),nouvelle_conf[i],nouvelle_conf[i+1])
+                transition = (nouvelle_conf[i-1],nouvelle_conf[i],nouvelle_conf[i+1])
+            elif i == 0:
+                transition = (('*','_'),nouvelle_conf[i],nouvelle_conf[i+1])
             else:
-                transition=(nouvelle_conf[i-1],nouvelle_conf[i],('*','_'))
+                transition = (nouvelle_conf[i-1],nouvelle_conf[i],('*','_'))
             if transition in automate.get_regles().keys():
                 nv_ruban.append(automate.get_regles()[transition])
             else:
                 nv_ruban.append(nouvelle_conf[i])
-        # print(nv_ruban)
-        temp=(tuple(repr(item) for item in nv_ruban)) 
-        nv_ruban=temp               
+        temp = (tuple(repr(item) for item in nv_ruban)) 
+        nv_ruban = temp               
 
-    return (nv_ruban,transition)
+    return nv_ruban
 
-def calcul_automate_q5(conf:Configuration_Automate,automate:Automate,transfo:bool,iteration : int = None,transition_particuliere : bool = None,succession : bool = None):
+def calcul_automate_q5(conf:Configuration_Automate,automate:Automate,transfo:bool = False,iteration : int = None,transition_particuliere : tuple = None,succession : bool = None):
     """
     QUESTION 5 :
     Ecrire une fonction qui prend comme argument un mot et un automate cellulaire et qui 
@@ -158,25 +156,27 @@ def calcul_automate_q5(conf:Configuration_Automate,automate:Automate,transfo:boo
     i = 0
     if iteration:
         for _ in range(iteration):
-            conf.set_mot(un_pas_automate(conf,automate,transfo)[0])
+            conf.set_mot(un_pas_automate(conf,automate))
     elif transition_particuliere:
-        nv_conf,transition = un_pas_automate(conf,automate,transfo)
-        conf=Configuration_Automate(nv_conf)
-        print(transition)
-        while transition!=transition_particuliere:
-            pas = un_pas_automate(conf,automate,transfo)
-            conf.set_mot(pas[0])
-            transition = pas[1]
+        transition_particuliere = transition_particuliere[0]+transition_particuliere[1]+transition_particuliere[2]
+        print(transition_particuliere)
+        print(conf.get_mot(1))
+        while True:
+            if transition_particuliere in '0'+conf.get_mot(1)+'0':
+                conf.set_mot(un_pas_automate(conf,automate))
+                break
+            else:
+                conf.set_mot(un_pas_automate(conf,automate))
             if i > len(automate.get_regles()):
-                return f"La trasition {transition_particuliere} n'a jamais été appliquée"
+                return f"La transition {transition_particuliere} n'a jamais été appliquée"
             i += 1
     elif succession:
         conf1 = conf.get_mot()
-        conf.set_mot(un_pas_automate(conf,automate,transfo)[0])
+        conf.set_mot(un_pas_automate(conf,automate,transfo))
         conf2 = conf.get_mot()
         while conf1!=conf2:
             conf1 = conf2
-            conf.set_mot(un_pas_automate(conf,automate,transfo)[0])
+            conf.set_mot(un_pas_automate(conf,automate,transfo))
             conf2 = conf.get_mot()
             if i > len(automate.get_regles()):
                 return "La configuration ne devient pas un stable"
@@ -185,7 +185,7 @@ def calcul_automate_q5(conf:Configuration_Automate,automate:Automate,transfo:boo
         res= [ast.literal_eval(item)[1] for item in conf.get_mot()]
         return res
     else:
-        return conf.get_mot()
+        return (conf.get_mot(),i)
 
         
     
@@ -196,39 +196,36 @@ def calcul_automate_q6(conf:Configuration_Automate,automate:Automate,iteration :
     de l'automate s'affiche de manière compréhensible
     """
     print(conf.get_mot(1))
+    i = 0
     if iteration:
         print('je suis l iteration')
         for _ in range(iteration):
-            conf.set_mot(un_pas_automate(conf,automate)[0])
+            conf.set_mot(un_pas_automate(conf,automate))
             print(conf.get_mot(1))
-        return conf.get_mot()
     elif transition_particuliere:
         print('je suis la transition particulier')
-        print(conf.get_mot(1))
-        nv_conf,transition = un_pas_automate(conf,automate)
-        conf=Configuration_Automate(nv_conf)
-        while transition!=transition_particuliere:
-            pas = un_pas_automate(conf,automate)
-            conf.set_mot(pas[0])
-            transition = pas[1]
+        transition_particuliere = transition_particuliere[0]+transition_particuliere[1]+transition_particuliere[2]
+        while True:
+            if transition_particuliere in '0'+conf.get_mot(1)+'0':
+                conf.set_mot(un_pas_automate(conf,automate))
+                print(conf.get_mot(1))
+                break
+            conf.set_mot(un_pas_automate(conf,automate))
             print(conf.get_mot(1))
-        return conf.get_mot()
+            if i > len(automate.get_regles()):
+                return f"La transition {transition_particuliere} n'a jamais été appliquée"
+            i += 1
     elif succession:
         print('je suis la succession')
         conf1 = conf.get_mot()
-        print(conf.get_mot(1))
-        conf.set_mot(un_pas_automate(conf,automate)[0])
+        conf.set_mot(un_pas_automate(conf,automate))
         conf2 = conf.get_mot()
-        print(conf.get_mot(1))
-        print(conf1,conf2)
         while conf1!=conf2:
             conf1 = conf2
-            conf.set_mot(un_pas_automate(conf,automate)[0])
+            conf.set_mot(un_pas_automate(conf,automate))
             print(conf.get_mot(1))
             conf2 = conf.get_mot()
-        return conf.get_mot()
-
-if __name__ == "__main__":
-    auto, config = initialisation("Fichier_Texte/Automate_cellulaire.txt","10011")
-    # calcul_automate_q6(config,auto,transition_particuliere=('1','0','0'))
-    print (auto.get_regles())
+            if i > len(automate.get_regles()):
+                return "La configuration ne devient pas un stable"
+            i += 1
+    return (conf.get_mot(),i)
