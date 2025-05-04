@@ -25,32 +25,28 @@ def simulation(mt:Machine_Turing,mot):
         for etat in mt.etat:
             etats.add((etat,lettre))
     regles = {}
-    with open('mt_simulation.txt','w') as f:
-        for depart,futur in mt.regle.items():
-            q,l = depart
-            q2,futur_l,d = futur
-            for i in range(3):
-                for l1 in mt.alphabet:
-                    for l2 in mt.alphabet:
-                        triplet = [0,0,0]
-                        triplet[i] = (q,l)
-                        triplet[(i+1)%3] = ('*',l1)
-                        triplet[(i+2)%3] = ('*',l2)
-                        if i == 0:
-                            if d == '>':
-                                regles[tuple(triplet)] = (q2,triplet[1][1]) 
-                                f.write(str(tuple(triplet))+':'+str((q2,triplet[1][1])))
-                            else:
-                                regles[tuple(triplet)] = (triplet[1])   
-                                f.write(str()) 
-                        if i == 1:
-                            regles[tuple(triplet)] = ('*',futur_l)
-                            f.write(str(tuple(triplet))+':'+str(('*',futur_l)) )
-                        if i == 2:
-                            if d == '<':
-                                regles[tuple(triplet)] = (q2,triplet[1][1])  
-                            else:
-                                regles[tuple(triplet)] = (triplet[1]) 
+    for depart,futur in mt.regle.items():
+        q,l = depart
+        q2,futur_l,d = futur
+        for i in range(3):
+            for l1 in mt.alphabet:
+                for l2 in mt.alphabet:
+                    triplet = [0,0,0]
+                    triplet[i] = (q,l)
+                    triplet[(i+1)%3] = ('*',l1)
+                    triplet[(i+2)%3] = ('*',l2)
+                    if i == 0:
+                        if d == '>':
+                            regles[tuple(triplet)] = (q2,triplet[1][1]) 
+                        else:
+                            regles[tuple(triplet)] = (triplet[1])   
+                    if i == 1:
+                        regles[tuple(triplet)] = ('*',futur_l)
+                    if i == 2:
+                        if d == '<':
+                            regles[tuple(triplet)] = (q2,triplet[1][1])  
+                        else:
+                            regles[tuple(triplet)] = (triplet[1]) 
     automate = Automate(etats,regles)
     ruban = []
     for i in range(len(mot)):
