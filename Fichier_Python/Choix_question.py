@@ -150,6 +150,9 @@ match fonc[1]:
             '"Mode=Cycle" et soit "Mode=Choix1" ou "Mode=Choix2".\n il faut rajouter "Mot=votre_mot" sinon le sera 10101 par défaut')
         else:
             if mode == "Infini":
+                mot = '0000000000'
+                i = random.randint(0,10)
+                mot = mot[:i] + '1' + mot[i+1:]
                 auto,config = initialisation("Fichier_Texte/Automate_infini.txt",mot)
                 print(auto)
                 calcul_automate_q6(config,auto,iteration = 10)
@@ -171,7 +174,7 @@ match fonc[1]:
                 print(config)
                 calcul_automate_q6(config,auto,iteration = 10)
             if mode == "Choix2":
-                auto,config = initialisation("Fichier_Texte/Automate_interessant_2.txt",mot)
+                auto,config = initialisation("Fichier_Texte/Automate_interessant_2.txt",'000001100010000')
                 print(auto)
                 calcul_automate_q6(config,auto,iteration = 10)
 
