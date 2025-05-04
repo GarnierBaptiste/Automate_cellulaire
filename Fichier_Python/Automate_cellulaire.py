@@ -44,7 +44,7 @@ class Configuration_Automate:
         """
         return len(self.mot)
     
-    def get_mot(self,mode=0):
+    def get_mot(self,mode = 0):
         """
         Renvoie la liste qui correspond au mot de l'élément
         """
@@ -78,7 +78,7 @@ def initialisation(nom_fichier, mot_entre : str):
             """
             dico = {}
             with open(nom_fichier,'r') as f:
-                lignes=f.readlines()
+                lignes = f.readlines()
                 for i in range(len(lignes)):
                     elem = lignes[i].replace('\n','').split(' -> ')
                     tuple_key = (elem[0][0],elem[0][2],elem[0][4])
@@ -103,7 +103,7 @@ def initialisation(nom_fichier, mot_entre : str):
     mot = Configuration_Automate(mot_entre)
     return auto,mot
 
-def un_pas_automate(conf : Configuration_Automate,automate : Automate,simulation:bool ):
+def un_pas_automate(conf : Configuration_Automate,automate : Automate,simulation:bool = False ):
     """
     QUESTION 4 : 
     Donner une fonction qui prend en argument un automate cellulaire et une configuration 
@@ -143,7 +143,7 @@ def un_pas_automate(conf : Configuration_Automate,automate : Automate,simulation
         nv_ruban = temp               
     return nv_ruban
 
-def calcul_automate_q5(conf:Configuration_Automate,automate:Automate,simulation:bool,iteration : int = None,trans_part : tuple = None,succession : bool = None):
+def calcul_automate_q5(conf:Configuration_Automate,automate:Automate,simulation:bool = False,iteration : int = None,trans_part : tuple = None,succession : bool = None):
     """
     QUESTION 5 :
     Ecrire une fonction qui prend comme argument un mot et un automate cellulaire et qui 
@@ -156,7 +156,7 @@ def calcul_automate_q5(conf:Configuration_Automate,automate:Automate,simulation:
     if iteration:
         for _ in range(iteration):
             conf.set_mot(un_pas_automate(conf,automate,simulation))
-            i+=1
+            i += 1
     elif trans_part:
         trans_part = trans_part[0]+trans_part[1]+trans_part[2]
         while True:
@@ -172,22 +172,22 @@ def calcul_automate_q5(conf:Configuration_Automate,automate:Automate,simulation:
         conf1 = conf.get_mot()
         conf.set_mot(un_pas_automate(conf,automate,simulation))
         conf2 = conf.get_mot()
-        while conf1!=conf2:
+        while conf1 != conf2:
             conf1 = conf2
             conf.set_mot(un_pas_automate(conf,automate,simulation))
             conf2 = conf.get_mot()
             if i > len(automate.get_regles()):
-                return "La configuration ne devient pas un stable"
+                return "Il n'ya a pas de succesiion"
             i += 1
     if simulation:
-        res= [ast.literal_eval(item)[1] for item in conf.get_mot()]
+        res = [ast.literal_eval(item)[1] for item in conf.get_mot()]
         return res
     else:
         return (conf.get_mot(),i)
 
         
     
-def calcul_automate_q6(conf:Configuration_Automate,automate:Automate,simulation:bool,iteration : int = None,trans_part : tuple = None,succession : bool = None):
+def calcul_automate_q6(conf:Configuration_Automate,automate:Automate,simulation:bool = False,iteration : int = None,trans_part : tuple = None,succession : bool = None):
     """
     QUESTION 6 : 
     Modifier la fonction précédente pour que, à chaque pas de simulation, la configuration 
@@ -227,24 +227,7 @@ def calcul_automate_q6(conf:Configuration_Automate,automate:Automate,simulation:
                 return "La configuration ne contient pas de succession"
             i += 1
     if simulation:
-        res= [ast.literal_eval(item)[1] for item in conf.get_mot()]
+        res = [ast.literal_eval(item)[1] for item in conf.get_mot()]
         return res
     else:
         return (conf.get_mot(),i)
-
-
-# exemple
-# etats = ['0', '1']
-# regle = {
-#     ('1','1','1'): '0',
-#     ('1','1','0'): '1',
-#     ('1','0','1'): '1',
-#     ('1','0','0'): '0',
-#     ('0','1','1'): '1',
-#     ('0','1','0'): '1',
-#     ('0','0','1'): '1',
-#     ('0','0','0'): '0'
-# }
-# config_init = Configuration_Automate("0001000")
-# automate=Automate(etats,regle)
-# print(calcul_automate_q5(config_init,automate,False,3))

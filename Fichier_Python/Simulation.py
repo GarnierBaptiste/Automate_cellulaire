@@ -1,57 +1,70 @@
-from Automate_cellulaire import Automate,calcul_automate_q5,un_pas_automate
-from Automate_cellulaire import Configuration_Automate as conf_auto
+from Automate_cellulaire import Automate,Configuration_Automate,calcul_automate_q5,un_pas_automate
 from Machine_Turing import Machine_Turing,Configuration_Machine,calcul_machine,lecture
 
-
 def simulation(mt:Machine_Turing,mot):
-    etats=set()
+    """
+    Cette fonction permet de simuler la machine de turing et l'automate cellulaire sur le mot donné en parametre.
+    """
+    def ruban_sans_tiret(ruban):
+        '''
+        Cette fonction permet de renvoyer un ruban qui ne contient pas de '_'. Pour pouvoir par la suite
+        dans la simulation comparer sans probleme la reponse obtenue par notre fonction de calcule de la machine de turing
+        et celle de l'automate cellulaire.
+        '''
+        while ruban and ruban[0] == '_':
+            ruban.pop(0)
+        while ruban and ruban[-1] == '_':
+            ruban.pop()
+        return ruban
+    
+    etats = set()
     for lettre in mt.alphabet:
         etats.add(('*',lettre))
         for etat in mt.etat:
             etats.add((etat,lettre))
-    regles={}
+    regles = {}
     with open('mt_simulation.txt','w') as f:
         for depart,futur in mt.regle.items():
-            q,l=depart
-            q2,futur_l,d=futur
+            q,l = depart
+            q2,futur_l,d = futur
             for i in range(3):
                 for l1 in mt.alphabet:
                     for l2 in mt.alphabet:
-                        triplet=[0,0,0]
-                        triplet[i]=(q,l)
-                        triplet[(i+1)%3]=('*',l1)
-                        triplet[(i+2)%3]=('*',l2)
-                        if i==0:
-                            if d=='>':
-                                regles[tuple(triplet)]=(q2,triplet[1][1]) 
+                        triplet = [0,0,0]
+                        triplet[i] = (q,l)
+                        triplet[(i+1)%3] = ('*',l1)
+                        triplet[(i+2)%3] = ('*',l2)
+                        if i == 0:
+                            if d == '>':
+                                regles[tuple(triplet)] = (q2,triplet[1][1]) 
                                 f.write(str(tuple(triplet))+':'+str((q2,triplet[1][1])))
                             else:
-                                regles[tuple(triplet)]=(triplet[1])   
+                                regles[tuple(triplet)] = (triplet[1])   
                                 f.write(str()) 
-                        if i==1:
-                            regles[tuple(triplet)]=('*',futur_l)
+                        if i == 1:
+                            regles[tuple(triplet)] = ('*',futur_l)
                             f.write(str(tuple(triplet))+':'+str(('*',futur_l)) )
-                        
-                        if i==2:
-                            if d=='<':
-                                regles[tuple(triplet)]=(q2,triplet[1][1])  
+                        if i == 2:
+                            if d == '<':
+                                regles[tuple(triplet)] = (q2,triplet[1][1])  
                             else:
-                                regles[tuple(triplet)]=(triplet[1]) 
+                                regles[tuple(triplet)] = (triplet[1]) 
     automate=Automate(etats,regles)
     ruban = []
     for i in range(len(mot)):
-        if i==0:
+        if i == 0:
             ruban.append(('q0',str(mot[i])))
         else:
             ruban.append(('*',str(mot[i])))
-    conf=conf_auto(ruban)
-    conf_mt=Configuration_Machine(mot,0,mt.etat_initiale)
-    mt_calcule=calcul_machine(mt,conf_mt)
-    auto_calcule=calcul_automate_q5(conf,automate,True,False,False,True)
-    return mt_calcule==auto_calcule
+    conf = Configuration_Automate(ruban)
+    conf_mt = Configuration_Machine(mot,0,mt.etat_initiale)
+    mt_calcule = ruban_sans_tiret(calcul_machine(mt,conf_mt))
+    auto_calcule = calcul_automate_q5(conf,automate,True,False,False,True)
+    if mt_calcule == auto_calcule:
+        return automate, conf,True
+    else:
+        return automate, conf,False
 
 if __name__ == "__main__":
-    lec = lecture('Fichier_Texte\Machine_Turing.txt')
-    mt = Machine_Turing(lec[1],lec[2],lec[2][0])
-    config = Configuration_Machine(lec[0],0,mt.get_etat_initial())
-    print(simulation(mt,'001'))
+    mt, config = lecture('Fichier_Texte\Machine_Turing.txt')
+    print(simulation(mt,config.get_ruban()))

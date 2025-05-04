@@ -1,8 +1,4 @@
 
-from Automate_cellulaire import Automate,calcul_automate_q5,un_pas_automate
-from Automate_cellulaire import Configuration_Automate as conf_auto
-
-
 class Machine_Turing():
     """
     QUESTION 8 :
@@ -13,14 +9,15 @@ class Machine_Turing():
         - l'etat actuel lors du parcours du ruban
         - le curseur qui represente la position dans le ruban
     """
-    def __init__(self,conf : dict,etats,q0):
+    def __init__(self,conf : dict,etats,qd,qf):
         """
         Constructeur pour la classe Machine_Turing
         """
         self.alphabet = {'0','1','_'}
         self.regle = conf
         self.etat = set(etats)
-        self.etat_initiale = q0
+        self.etat_initiale = qd
+        self.etat_finale = qf
 
     def get_regle(self):
         """
@@ -33,6 +30,12 @@ class Machine_Turing():
         Permet de récupérer l'état initial de la machine de turing
         """
         return self.etat_initiale
+    
+    def __str__(self):
+        mot = ''
+        for key,value in self.regle.items():
+            mot += f"{key[0]} {key[1]} => {value[0]} {value[1]} {value[2]}\n" + "                "
+        return f"La machine de turing est :\n  L'alphabet => {self.alphabet}\n  Les états => {self.etat}\n  L'état initial => {self.etat_initiale}\n  L'état final => {self.etat_finale}\n  Les règles => {mot}"
 
 class Configuration_Machine():
     '''
@@ -53,14 +56,14 @@ class Configuration_Machine():
         """
         return self.ruban
     
-    def set_ruban(self, nouv, pos=None):
+    def set_ruban(self, nouv, pos = None):
         """
         Permet de modifier la configuration à la position pos
         """
-        if pos is None:
+        if pos == None:
             self.ruban = nouv
         else:
-            self.ruban[pos]=nouv
+            self.ruban[pos] = nouv
     
     def get_curseur(self):
         """
@@ -79,6 +82,9 @@ class Configuration_Machine():
         Permet de modifier l'état actuel de la configuration
         """
         self.etat_actuel = nouv_etat
+    
+    def __str__(self):
+        return f"La configuration est :\n  Le mot => {''.join(self.ruban)}\n  La position du curseur => {self.curseur}\n  L'état actuel => {self.etat_actuel}"
         
 def lecture(fichier : str):
     '''
@@ -98,7 +104,9 @@ def lecture(fichier : str):
             etats.append(ligne[0])
             etats.append(ligne[2])
             configuration[(ligne[0],ligne[1])] = (ligne[2],ligne[3],ligne[4].replace('\n',''))
-        return mot,configuration,etats
+        mt = Machine_Turing(configuration,etats,etats[0],etats[1])
+        configuration_mt = Configuration_Machine(mot,0,etats[0])        
+        return mt,configuration_mt
 
 def un_pas_machine(mt : Machine_Turing, config : Configuration_Machine):
     '''
@@ -121,18 +129,6 @@ def un_pas_machine(mt : Machine_Turing, config : Configuration_Machine):
             pass
     config.set_etat_actuel(mt.get_regle()[etat][0])
 
-'''
-Cette fonction permet de renvoyer un ruban qui ne contient pas de '_'. Pour pouvoir par la suite
-dans la simulation comparer sans probleme la reponse obtenue par notre fonction de calcule de la machine de turing
-et celle de l'automate cellulaire.
-'''
-def ruban_sans_tiret(ruban):
-    while ruban and ruban[0] == '_':
-        ruban.pop(0)
-    while ruban and ruban[-1] == '_':
-        ruban.pop()
-    return ruban
-
 def calcul_machine(mt : Machine_Turing, config : Configuration_Machine):
     '''
     QUESTION 12 :
@@ -140,61 +136,5 @@ def calcul_machine(mt : Machine_Turing, config : Configuration_Machine):
     '''
     while (config.get_etat_actuel(),config.get_ruban()[config.get_curseur()]) in mt.get_regle().keys():
         un_pas_machine(mt,config)
-    if config.get_etat_actuel() == 'accept':
+    if config.get_etat_actuel() == mt.etat_finale:
         return config.ruban
-
-
-def simulation(mt:Machine_Turing,mot):
-    etats=set()
-    for lettre in mt.alphabet:
-        etats.add(('*',lettre))
-        for etat in mt.etat:
-            etats.add((etat,lettre))
-    regles={}
-    with open('mt_simulation.txt','w') as f:
-        for depart,futur in mt.regle.items():
-            q,l=depart
-            q2,futur_l,d=futur
-            for i in range(3):
-                for l1 in mt.alphabet:
-                    for l2 in mt.alphabet:
-                        triplet=[0,0,0]
-                        triplet[i]=(q,l)
-                        triplet[(i+1)%3]=('*',l1)
-                        triplet[(i+2)%3]=('*',l2)
-                        if i==0:
-                            if d=='>':
-                                regles[tuple(triplet)]=(q2,triplet[1][1]) 
-                                f.write(str(tuple(triplet))+':'+str((q2,triplet[1][1])))
-                            else:
-                                regles[tuple(triplet)]=(triplet[1])   
-                                f.write(str()) 
-                        if i==1:
-                            regles[tuple(triplet)]=('*',futur_l)
-                            f.write(str(tuple(triplet))+':'+str(('*',futur_l)) )
-                        
-                        if i==2:
-                            if d=='<':
-                                regles[tuple(triplet)]=(q2,triplet[1][1])  
-                            else:
-                                regles[tuple(triplet)]=(triplet[1]) 
-    automate=Automate(etats,regles)
-    ruban = []
-    for i in range(len(mot)):
-        if i==0:
-            ruban.append(('q0',str(mot[i])))
-        else:
-            ruban.append(('*',str(mot[i])))
-    conf=conf_auto(ruban)
-    conf_mt=Configuration_Machine(mot,0,mt.etat_initiale)
-    mt_calcule=ruban_sans_tiret(calcul_machine(mt,conf_mt))
-    auto_calcule=calcul_automate_q5(conf,automate,True,False,False,True)
-    return mt_calcule==auto_calcule
-                    
-if __name__ == "__main__":
-    lec = lecture('Fichier_Texte\Machine_Turing.txt')
-    mt = Machine_Turing(lec[1],lec[2],lec[2][0])
-    config = Configuration_Machine(lec[0],0,mt.get_etat_initial())
-    
-    
-

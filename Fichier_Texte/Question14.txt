@@ -1,0 +1,15 @@
+Avec la question 5, on comprend que ce problème est indécidable, car un automate cellulaire ne sait pas quand s'arrêter :
+
+* Un automate cellulaire est Turing-complet, ce qui signifie qu'il peut simuler une machine de Turing. En d'autres termes, tout ce qu'une machine de Turing peut calculer, un automate cellulaire peut également le faire.
+
+* Demander si un symbole s apparaît dans une configuration revient à demander si un état particulier est atteint. Cela équivaut à se demander si une machine de Turing entre dans un état spécifique, ce qui est un problème bien connu en théorie de la calculabilité.
+
+* Le problème n'est pas trivial, car :
+-> Il existe des automates cellulaires qui produisent une configuration contenant s;
+-> Et d'autres qui ne produiront jamais s.
+
+*Puisque ce n’est ni toujours vrai ni toujours faux, c’est un problème non trivial. En d'autres termes, il n'existe pas de réponse unique et simple qui s'applique à tous les cas.
+
+*On peut donc appliquer le théorème de Rice, qui stipule que tout problème non trivial concernant le comportement d’un programme Turing-complet est indécidable. Cela signifie qu'il n'existe pas d'algorithme général capable de déterminer si un automate cellulaire atteindra un état particulier.
+
+Conclusion : le problème HALTING-CELLULAR-AUTOMATON est indécidable.

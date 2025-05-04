@@ -20,7 +20,7 @@ Question6:
 	python3 Fichier_Python/Choix_Question.py exo6 $(Mode) $(Mot) $(Valeur)
 	
 Question7:
-	python3 Fichier_Python/Choix_Question.py exo7 $(Mode)
+	python3 Fichier_Python/Choix_Question.py exo7 $(Mode) $(Mot)
 	
 Question8:
 	python3 Fichier_Python/Choix_Question.py exo8
@@ -29,16 +29,16 @@ Question9:
 	python3 Fichier_Python/Choix_Question.py exo9
 	
 Question10:
-	python3 Fichier_Python/Choix_Question.py exo10
+	python3 Fichier_Python/Choix_Question.py exo10 $(Mode) $(Mot)
 	
 Question11:
-	python3 Fichier_Python/Choix_Question.py exo11
+	python3 Fichier_Python/Choix_Question.py exo11 $(Mode) $(Mot)
 	
 Question12:
-	python3 Fichier_Python/Choix_Question.py exo12
+	python3 Fichier_Python/Choix_Question.py exo12 $(Mode)
 	
 Question13:
-	python3 Fichier_Python/Choix_Question.py exo13
+	python3 Fichier_Python/Choix_Question.py exo13 $(Mode)
 	
 Question14:
 	python3 Fichier_Python/Choix_Question.py exo14

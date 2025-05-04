@@ -1,7 +1,7 @@
-import sys
-import inspect
+import sys,inspect,random
 from Automate_cellulaire import Automate,Configuration_Automate,initialisation,un_pas_automate,calcul_automate_q5,calcul_automate_q6
 from Machine_Turing import Machine_Turing,Configuration_Machine,lecture,un_pas_machine,calcul_machine
+from Simulation import simulation
 
 fonc = sys.argv
 mode = fonc[2] if len(fonc) > 2 else None
@@ -58,20 +58,21 @@ match fonc[1]:
                 print(f"\nLa configuration après {bonus} itérations est :")
                 print(config)
             elif mode == "Transition":
-                bonus = tuple(bonus.split(','))
-                if not bonus or (len(bonus)!=3):
+                if not bonus or (len(bonus) != 5):
                     bonus = list(auto.get_regles().keys())[0]
-                resultat = calcul_automate_q5(config,auto,transition_particuliere=bonus)
+                else:
+                    bonus = tuple(bonus.split(','))
+                resultat = calcul_automate_q5(config,auto,trans_part = bonus)
                 if type(resultat) == str:
                     print(resultat)
                 else:
                     print(f"La transition {bonus} apparait au bout de {resultat[1]+1} itérations")
             else:
-                resultat = calcul_automate_q5(config,auto,succession=True)
+                resultat = calcul_automate_q5(config,auto,succession = True)
                 if type(resultat) == str:
                     print(resultat)
                 else:
-                    print(f"La configuration devient stable au bout de {resultat[1]+1} itérations")
+                    print(f"Il y a une succession au bout de {resultat[1]+1} itérations")
         else:
             print('Pour tester la fonction il faut utiliser la commande "make Question5" et ensuite soit "Mode=Iteration" ' \
             'soit "Mode=Transition" et soit "Mode=Succession".\nEn fonction du mode que vous voulez tester et ensuite il ' \
@@ -80,6 +81,7 @@ match fonc[1]:
     case "exo6":
         print(inspect.getsource(calcul_automate_q6))
         if mode == "Iteration" or mode == "Transition" or mode == "Succession":
+            print(f'\nTest de la fonction pour le mode {mode} :\n   On utilise les règles écrites dans le fichier "Automate_cellulaire.txt" qui se situe dans le dossier Fichier_Texte et le mot {mot}.\n')
             auto,config = initialisation("Fichier_Texte/Automate_cellulaire.txt",mot)
             print(auto)
             if mode == "Iteration":
@@ -89,19 +91,19 @@ match fonc[1]:
                         bonus = 10
                 else:
                     bonus = int(bonus)
-                calcul_automate_q6(config,auto,iteration=bonus)
+                calcul_automate_q6(config,auto,iteration = bonus)
             elif mode == "Transition":
-                if not bonus or (len(bonus)!=5):
+                if not bonus or (len(bonus) != 5):
                     bonus = list(auto.get_regles().keys())[0]
                 else:
                     bonus = tuple(bonus.split(','))
-                resultat = calcul_automate_q6(config,auto,trans_part=bonus)
+                resultat = calcul_automate_q6(config,auto,trans_part = bonus)
                 if type(resultat) == str:
                     print(resultat)
                 else:
                     print(f"La transition {bonus}  est utilisé pour passer à l'itération numéro {resultat[1]+1}")
             else:
-                resultat = calcul_automate_q6(config,auto,succession=True)
+                resultat = calcul_automate_q6(config,auto,succession = True)
                 if type(resultat) == str:
                     print(resultat)
                 else:
@@ -112,37 +114,92 @@ match fonc[1]:
             'faut rajouter "Mot=votre_mot" et enfin si vous etes en mode Iteration ou Transition il faut ' \
             'rajouter "Iteration=votre_nombre_ou_transition"')
     case "exo7":
-        if mode != "Infini" or mode != "Cycle" or mode != "Choix1" or mode != "Choix2":
-            pass
+        if mode != "Infini" and mode != "Cycle" and mode != "Choix1" and mode != "Choix2":
+            print('Pour tester la fonction il faut utiliser la commande "make Question7" et ensuite soit "Mode=Infini" soit ' \
+            '"Mode=Cycle" et soit "Mode=Choix1" ou "Mode=Choix2".\n il faut rajouter "Mot=votre_mot" sinon le sera 10101 par défaut')
         else:
             if mode == "Infini":
                 auto,config = initialisation("Fichier_Texte/Automate_infini.txt",mot)
                 print(auto)
-                calcul_automate_q6(config,auto,iteration=10)
+                calcul_automate_q6(config,auto,iteration = 10)
             if mode == "Cycle":
+                mot = ''
+                for _ in range(23):
+                    mot += str(random.randint(0,2))
+                    print(mot)
                 auto,config = initialisation("Fichier_Texte/Automate_cyclique.txt",mot)
-                print(auto)
-                calcul_automate_q6(config,auto,iteration=10)
+                print(auto,'\n',config)
+                print()
+                calcul_automate_q6(config,auto,iteration = 10)
             if mode == "Choix1":
+                mot = '00000000000000000000000'
+                i = random.randint(0,22)
+                mot = mot[:i] + '1' + mot[i+1:]
                 auto,config = initialisation("Fichier_Texte/Automate_interessant_1.txt",mot)
                 print(auto)
-                calcul_automate_q6(config,auto,iteration=10)
+                print(config)
+                calcul_automate_q6(config,auto,iteration = 10)
             if mode == "Choix2":
                 auto,config = initialisation("Fichier_Texte/Automate_interessant_2.txt",mot)
                 print(auto)
-                calcul_automate_q6(config,auto,iteration=10)
+                calcul_automate_q6(config,auto,iteration = 10)
 
     case "exo8":
         print(inspect.getsource(Machine_Turing))
     case "exo9":
         print(inspect.getsource(Configuration_Machine))
     case "exo10":
-        pass
+        print(inspect.getsource(lecture))
+        if mode == "Exemple":
+            print(f'\nTest de la fonction :\n   On utilise les règles et le mot écrites dans le fichier "Machine_Turing.txt" qui se situe dans le dossier Fichier_Texte.\n')
+            mt,config = lecture('Fichier_Texte/Machine_Turing.txt')
+            print(mt,"\n\n",config)
+        else:
+            print('Pour tester la fonction il faut utiliser la commande "make Question10 Mode=Exemple"')
     case "exo11":
-        pass
+        print(inspect.getsource(un_pas_machine))
+        if mode == "Exemple":
+            print(f'\nTest de la fonction :\n   On utilise les règles et le mot écrites dans le fichier "Machine_Turing.txt" qui se situe dans le dossier Fichier_Texte.\n')
+            mt,config = lecture('Fichier_Texte/Machine_Turing.txt')
+            print(mt,"\n",config)
+            un_pas_machine(mt,config)
+            print("\nLa configuration après le pas de calcul")
+            print(config)
+        else:
+            print('Pour tester la fonction il faut utiliser la commande "make Question11 Mode=Exemple"')
     case "exo12":
-        pass
+        print(inspect.getsource(calcul_machine))
+        if mode == "Exemple":
+            print(f'\nTest de la fonction :\n   On utilise les règles et le mot écrites dans le fichier "Machine_Turing.txt" qui se situe dans le dossier Fichier_Texte.\n')
+            mt, config = lecture('Fichier_Texte/Machine_Turing.txt')
+            print(mt,"\n",config)
+            resultat = calcul_machine(mt,config)
+            if resultat:
+                print("La Machine de Turing accepte le mot")
+            else:
+                print("La Machine de Turing n'accepte pas le mot")
+        else:
+            print('Pour tester la fonction il faut utiliser la commande "make Question12 Mode=Exemple"')
+
     case "exo13":
-        pass
+        print(inspect.getsource(simulation))
+        if mode == "Exemple":
+            print(f'\nTest de la fonction :\n   On utilise les règles et le mot écrites dans le fichier "Machine_Turing.txt" qui se situe dans le dossier Fichier_Texte.\n')
+            mt, config = lecture('Fichier_Texte/Machine_Turing.txt')
+            mot = ''
+            for elem in config.get_ruban():
+                mot += elem
+            print(mt,"\n",config)
+            resultat = simulation(mt,config.get_ruban())
+            if resultat[2]:
+                print(f"Le mot {mot} est accépté par l'Automate Celluaire qui représente la Machine de Turing et on a \n{resultat[0]}\n{resultat[1]}")
+            else:
+                print(f"Le mot {mot} n'est pas accépté par l'Automate Celluaire qui représente la Machine de Turing")
+        else:
+            print('Pour tester la fonction il faut utiliser la commande "make Question13 Mode=Exemple"')
     case "exo14":
-        pass
+        with open('Fichier_Texte/Question14.txt','r') as f:
+            mot = '\n'
+            for elem in f.readlines():
+                mot += elem
+            print(mot)
