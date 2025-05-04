@@ -2,4 +2,5 @@
 q0
 accept
 q0,0,q0,1,>
-q0,1,accept,1,_
+q0,1,q0,1,>
+q0,_,accept,_,_

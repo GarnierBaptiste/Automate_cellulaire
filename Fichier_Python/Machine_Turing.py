@@ -57,10 +57,10 @@ class Configuration_Machine():
         """
         Permet de modifier la configuration à la position pos
         """
-        if pos:
+        if pos is None:
             self.ruban = nouv
         else:
-            self.ruban[pos]
+            self.ruban[pos]=nouv
     
     def get_curseur(self):
         """
@@ -112,6 +112,7 @@ def un_pas_machine(mt : Machine_Turing, config : Configuration_Machine):
             config.curseur += -1
             if not config.get_curseur() > 0:
                 config.set_ruban(['_'] + config.get_ruban())
+                
         case '>':
             config.curseur += 1
             if not config.get_curseur() < len(config.get_ruban()):
@@ -119,6 +120,18 @@ def un_pas_machine(mt : Machine_Turing, config : Configuration_Machine):
         case '_':
             pass
     config.set_etat_actuel(mt.get_regle()[etat][0])
+
+'''
+Cette fonction permet de renvoyer un ruban qui ne contient pas de '_'. Pour pouvoir par la suite
+dans la simulation comparer sans probleme la reponse obtenue par notre fonction de calcule de la machine de turing
+et celle de l'automate cellulaire.
+'''
+def ruban_sans_tiret(ruban):
+    while ruban and ruban[0] == '_':
+        ruban.pop(0)
+    while ruban and ruban[-1] == '_':
+        ruban.pop()
+    return ruban
 
 def calcul_machine(mt : Machine_Turing, config : Configuration_Machine):
     '''
@@ -174,7 +187,7 @@ def simulation(mt:Machine_Turing,mot):
             ruban.append(('*',str(mot[i])))
     conf=conf_auto(ruban)
     conf_mt=Configuration_Machine(mot,0,mt.etat_initiale)
-    mt_calcule=calcul_machine(mt,conf_mt)
+    mt_calcule=ruban_sans_tiret(calcul_machine(mt,conf_mt))
     auto_calcule=calcul_automate_q5(conf,automate,True,False,False,True)
     return mt_calcule==auto_calcule
                     
@@ -182,5 +195,6 @@ if __name__ == "__main__":
     lec = lecture('Fichier_Texte\Machine_Turing.txt')
     mt = Machine_Turing(lec[1],lec[2],lec[2][0])
     config = Configuration_Machine(lec[0],0,mt.get_etat_initial())
-    print(simulation(mt,'001'))
+    
+    
 

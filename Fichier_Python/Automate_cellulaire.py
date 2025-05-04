@@ -103,7 +103,7 @@ def initialisation(nom_fichier, mot_entre : str):
     mot = Configuration_Automate(mot_entre)
     return auto,mot
 
-def un_pas_automate(conf : Configuration_Automate,automate : Automate,simulation:bool = False):
+def un_pas_automate(conf : Configuration_Automate,automate : Automate,simulation:bool ):
     """
     QUESTION 4 : 
     Donner une fonction qui prend en argument un automate cellulaire et une configuration 
@@ -128,8 +128,8 @@ def un_pas_automate(conf : Configuration_Automate,automate : Automate,simulation
     if simulation:
         #permet d'avoir une liste de tuple tel que (('q0','1),('*',1'),..) et non ("('q0',1),('*','1'),...)")
         nouvelle_conf = [ast.literal_eval(item) for item in tuple(mot)]
-        for i in range(taille+1):
-            if i>0 and i < taille:
+        for i in range(taille):
+            if i>0 and i < taille-1:
                 transition = (nouvelle_conf[i-1],nouvelle_conf[i],nouvelle_conf[i+1])
             elif i == 0:
                 transition = (('*','_'),nouvelle_conf[i],nouvelle_conf[i+1])
@@ -141,10 +141,9 @@ def un_pas_automate(conf : Configuration_Automate,automate : Automate,simulation
                 nv_ruban.append(nouvelle_conf[i])
         temp = (tuple(repr(item) for item in nv_ruban)) 
         nv_ruban = temp               
-
     return nv_ruban
 
-def calcul_automate_q5(conf:Configuration_Automate,automate:Automate,transfo:bool = False,iteration : int = None,trans_part : tuple = None,succession : bool = None):
+def calcul_automate_q5(conf:Configuration_Automate,automate:Automate,simulation:bool,iteration : int = None,trans_part : tuple = None,succession : bool = None):
     """
     QUESTION 5 :
     Ecrire une fonction qui prend comme argument un mot et un automate cellulaire et qui 
@@ -156,30 +155,31 @@ def calcul_automate_q5(conf:Configuration_Automate,automate:Automate,transfo:boo
     i = 0
     if iteration:
         for _ in range(iteration):
-            conf.set_mot(un_pas_automate(conf,automate))
+            conf.set_mot(un_pas_automate(conf,automate,simulation))
+            i+=1
     elif trans_part:
         trans_part = trans_part[0]+trans_part[1]+trans_part[2]
         while True:
             if trans_part in '0'+conf.get_mot(1)+'0':
-                conf.set_mot(un_pas_automate(conf,automate))
+                conf.set_mot(un_pas_automate(conf,automate,simulation))
                 break
             else:
-                conf.set_mot(un_pas_automate(conf,automate))
+                conf.set_mot(un_pas_automate(conf,automate,simulation))
             if i > len(automate.get_regles()):
                 return f"La transition {(trans_part[0],trans_part[1],trans_part[2])} n'a jamais été appliquée"
             i += 1
     elif succession:
         conf1 = conf.get_mot()
-        conf.set_mot(un_pas_automate(conf,automate,transfo))
+        conf.set_mot(un_pas_automate(conf,automate,simulation))
         conf2 = conf.get_mot()
         while conf1!=conf2:
             conf1 = conf2
-            conf.set_mot(un_pas_automate(conf,automate,transfo))
+            conf.set_mot(un_pas_automate(conf,automate,simulation))
             conf2 = conf.get_mot()
             if i > len(automate.get_regles()):
                 return "La configuration ne devient pas un stable"
             i += 1
-    if transfo:
+    if simulation:
         res= [ast.literal_eval(item)[1] for item in conf.get_mot()]
         return res
     else:
@@ -187,7 +187,7 @@ def calcul_automate_q5(conf:Configuration_Automate,automate:Automate,transfo:boo
 
         
     
-def calcul_automate_q6(conf:Configuration_Automate,automate:Automate,iteration : int = None,trans_part : tuple = None,succession : bool = None):
+def calcul_automate_q6(conf:Configuration_Automate,automate:Automate,simulation:bool,iteration : int = None,trans_part : tuple = None,succession : bool = None):
     """
     QUESTION 6 : 
     Modifier la fonction précédente pour que, à chaque pas de simulation, la configuration 
@@ -198,17 +198,17 @@ def calcul_automate_q6(conf:Configuration_Automate,automate:Automate,iteration :
     if iteration:
         print(f'Nous allons itérer {iteration} fois la configuration avec les règles de l\'automate ci dessus\n')
         for j in range(iteration):
-            conf.set_mot(un_pas_automate(conf,automate))
+            conf.set_mot(un_pas_automate(conf,automate,simulation))
             print(f"Voici la configuration à l'itération numéro {j+1}\n",conf,"\n")
     elif trans_part:
         print(f'Nous recherchons si la transition {trans_part} est appliquée\n')
         trans_part = trans_part[0]+trans_part[1]+trans_part[2]
         while True:
             if trans_part in '0'+conf.get_mot(1)+'0':
-                conf.set_mot(un_pas_automate(conf,automate))
+                conf.set_mot(un_pas_automate(conf,automate,simulation))
                 print(f"Voici la configuration après {i+1} itérations", conf,"\n")
                 break
-            conf.set_mot(un_pas_automate(conf,automate))
+            conf.set_mot(un_pas_automate(conf,automate,simulation))
             print(f"Voici la configuration après {i+1} itérations",conf,"\n")
             if i == len(automate.get_regles()):
                 return f"La transition {(trans_part[0],trans_part[1],trans_part[2])} n'a jamais été appliquée"
@@ -226,4 +226,25 @@ def calcul_automate_q6(conf:Configuration_Automate,automate:Automate,iteration :
             if i == len(automate.get_regles()):
                 return "La configuration ne contient pas de succession"
             i += 1
-    return (conf.get_mot(),i)
+    if simulation:
+        res= [ast.literal_eval(item)[1] for item in conf.get_mot()]
+        return res
+    else:
+        return (conf.get_mot(),i)
+
+
+# exemple
+# etats = ['0', '1']
+# regle = {
+#     ('1','1','1'): '0',
+#     ('1','1','0'): '1',
+#     ('1','0','1'): '1',
+#     ('1','0','0'): '0',
+#     ('0','1','1'): '1',
+#     ('0','1','0'): '1',
+#     ('0','0','1'): '1',
+#     ('0','0','0'): '0'
+# }
+# config_init = Configuration_Automate("0001000")
+# automate=Automate(etats,regle)
+# print(calcul_automate_q5(config_init,automate,False,3))
