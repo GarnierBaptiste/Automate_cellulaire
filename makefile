@@ -17,10 +17,10 @@ Question5:
 	python3 Fichier_Python/Choix_Question.py exo5 $(Mode) $(Mot) $(Valeur)
 	
 Question6:	
-	python3 Fichier_Python/Choix_Question.py exo6
+	python3 Fichier_Python/Choix_Question.py exo6 $(Mode) $(Mot) $(Valeur)
 	
 Question7:
-	python3 Fichier_Python/Choix_Question.py exo7
+	python3 Fichier_Python/Choix_Question.py exo7 $(Mode)
 	
 Question8:
 	python3 Fichier_Python/Choix_Question.py exo8

@@ -65,14 +65,13 @@ match fonc[1]:
                 if type(resultat) == str:
                     print(resultat)
                 else:
-                    print(f"La transition {bonus}  apparait au bout de {resultat[1]} itérations")
+                    print(f"La transition {bonus} apparait au bout de {resultat[1]+1} itérations")
             else:
                 resultat = calcul_automate_q5(config,auto,succession=True)
                 if type(resultat) == str:
                     print(resultat)
                 else:
-                    print(f"La configuration devient stable au bout de {resultat[1]} itérations")
-
+                    print(f"La configuration devient stable au bout de {resultat[1]+1} itérations")
         else:
             print('Pour tester la fonction il faut utiliser la commande "make Question5" et ensuite soit "Mode=Iteration" ' \
             'soit "Mode=Transition" et soit "Mode=Succession".\nEn fonction du mode que vous voulez tester et ensuite il ' \
@@ -80,8 +79,59 @@ match fonc[1]:
             'rajouter "Iteration=votre_nombre_ou_transition"')
     case "exo6":
         print(inspect.getsource(calcul_automate_q6))
+        if mode == "Iteration" or mode == "Transition" or mode == "Succession":
+            auto,config = initialisation("Fichier_Texte/Automate_cellulaire.txt",mot)
+            print(auto)
+            if mode == "Iteration":
+                if not bonus or ('1' not in bonus and '2' not in bonus and '3' not in bonus and
+                                 '4' not in bonus and '5' not in bonus and '6' not in bonus and 
+                                 '7' not in bonus and '8' not in bonus and '9' not in bonus):
+                        bonus = 10
+                else:
+                    bonus = int(bonus)
+                calcul_automate_q6(config,auto,iteration=bonus)
+            elif mode == "Transition":
+                if not bonus or (len(bonus)!=5):
+                    bonus = list(auto.get_regles().keys())[0]
+                else:
+                    bonus = tuple(bonus.split(','))
+                resultat = calcul_automate_q6(config,auto,trans_part=bonus)
+                if type(resultat) == str:
+                    print(resultat)
+                else:
+                    print(f"La transition {bonus}  est utilisé pour passer à l'itération numéro {resultat[1]+1}")
+            else:
+                resultat = calcul_automate_q6(config,auto,succession=True)
+                if type(resultat) == str:
+                    print(resultat)
+                else:
+                    print(f"La configuration a une succession au bout de {resultat[1]+1} itérations")
+        else:
+            print('Pour tester la fonction il faut utiliser la commande "make Question6" et ensuite soit "Mode=Iteration" ' \
+            'soit "Mode=Transition" et soit "Mode=Succession".\nEn fonction du mode que vous voulez tester et ensuite il ' \
+            'faut rajouter "Mot=votre_mot" et enfin si vous etes en mode Iteration ou Transition il faut ' \
+            'rajouter "Iteration=votre_nombre_ou_transition"')
     case "exo7":
-        pass
+        if mode != "Infini" or mode != "Cycle" or mode != "Choix1" or mode != "Choix2":
+            pass
+        else:
+            if mode == "Infini":
+                auto,config = initialisation("Fichier_Texte/Automate_infini.txt",mot)
+                print(auto)
+                calcul_automate_q6(config,auto,iteration=10)
+            if mode == "Cycle":
+                auto,config = initialisation("Fichier_Texte/Automate_cyclique.txt",mot)
+                print(auto)
+                calcul_automate_q6(config,auto,iteration=10)
+            if mode == "Choix1":
+                auto,config = initialisation("Fichier_Texte/Automate_interessant_1.txt",mot)
+                print(auto)
+                calcul_automate_q6(config,auto,iteration=10)
+            if mode == "Choix2":
+                auto,config = initialisation("Fichier_Texte/Automate_interessant_2.txt",mot)
+                print(auto)
+                calcul_automate_q6(config,auto,iteration=10)
+
     case "exo8":
         print(inspect.getsource(Machine_Turing))
     case "exo9":

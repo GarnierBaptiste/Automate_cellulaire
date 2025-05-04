@@ -144,7 +144,7 @@ def un_pas_automate(conf : Configuration_Automate,automate : Automate,simulation
 
     return nv_ruban
 
-def calcul_automate_q5(conf:Configuration_Automate,automate:Automate,transfo:bool = False,iteration : int = None,transition_particuliere : tuple = None,succession : bool = None):
+def calcul_automate_q5(conf:Configuration_Automate,automate:Automate,transfo:bool = False,iteration : int = None,trans_part : tuple = None,succession : bool = None):
     """
     QUESTION 5 :
     Ecrire une fonction qui prend comme argument un mot et un automate cellulaire et qui 
@@ -157,18 +157,16 @@ def calcul_automate_q5(conf:Configuration_Automate,automate:Automate,transfo:boo
     if iteration:
         for _ in range(iteration):
             conf.set_mot(un_pas_automate(conf,automate))
-    elif transition_particuliere:
-        transition_particuliere = transition_particuliere[0]+transition_particuliere[1]+transition_particuliere[2]
-        print(transition_particuliere)
-        print(conf.get_mot(1))
+    elif trans_part:
+        trans_part = trans_part[0]+trans_part[1]+trans_part[2]
         while True:
-            if transition_particuliere in '0'+conf.get_mot(1)+'0':
+            if trans_part in '0'+conf.get_mot(1)+'0':
                 conf.set_mot(un_pas_automate(conf,automate))
                 break
             else:
                 conf.set_mot(un_pas_automate(conf,automate))
             if i > len(automate.get_regles()):
-                return f"La transition {transition_particuliere} n'a jamais été appliquée"
+                return f"La transition {(trans_part[0],trans_part[1],trans_part[2])} n'a jamais été appliquée"
             i += 1
     elif succession:
         conf1 = conf.get_mot()
@@ -189,43 +187,43 @@ def calcul_automate_q5(conf:Configuration_Automate,automate:Automate,transfo:boo
 
         
     
-def calcul_automate_q6(conf:Configuration_Automate,automate:Automate,iteration : int = None,transition_particuliere : bool = None,succession : bool = None):
+def calcul_automate_q6(conf:Configuration_Automate,automate:Automate,iteration : int = None,trans_part : tuple = None,succession : bool = None):
     """
     QUESTION 6 : 
     Modifier la fonction précédente pour que, à chaque pas de simulation, la configuration 
     de l'automate s'affiche de manière compréhensible
     """
-    print(conf.get_mot(1))
+    print("Voici la configuration au début\n",conf)
     i = 0
     if iteration:
-        print('je suis l iteration')
-        for _ in range(iteration):
+        print(f'Nous allons itérer {iteration} fois la configuration avec les règles de l\'automate ci dessus\n')
+        for j in range(iteration):
             conf.set_mot(un_pas_automate(conf,automate))
-            print(conf.get_mot(1))
-    elif transition_particuliere:
-        print('je suis la transition particulier')
-        transition_particuliere = transition_particuliere[0]+transition_particuliere[1]+transition_particuliere[2]
+            print(f"Voici la configuration à l'itération numéro {j+1}\n",conf,"\n")
+    elif trans_part:
+        print(f'Nous recherchons si la transition {trans_part} est appliquée\n')
+        trans_part = trans_part[0]+trans_part[1]+trans_part[2]
         while True:
-            if transition_particuliere in '0'+conf.get_mot(1)+'0':
+            if trans_part in '0'+conf.get_mot(1)+'0':
                 conf.set_mot(un_pas_automate(conf,automate))
-                print(conf.get_mot(1))
+                print(f"Voici la configuration après {i+1} itérations", conf,"\n")
                 break
             conf.set_mot(un_pas_automate(conf,automate))
-            print(conf.get_mot(1))
-            if i > len(automate.get_regles()):
-                return f"La transition {transition_particuliere} n'a jamais été appliquée"
+            print(f"Voici la configuration après {i+1} itérations",conf,"\n")
+            if i == len(automate.get_regles()):
+                return f"La transition {(trans_part[0],trans_part[1],trans_part[2])} n'a jamais été appliquée"
             i += 1
     elif succession:
-        print('je suis la succession')
+        print("Nous recherchons s'il y a une succession \n")
         conf1 = conf.get_mot()
         conf.set_mot(un_pas_automate(conf,automate))
         conf2 = conf.get_mot()
         while conf1!=conf2:
             conf1 = conf2
             conf.set_mot(un_pas_automate(conf,automate))
-            print(conf.get_mot(1))
+            print(f"Voici la configuration après {i} itérations\n",conf,"\n")
             conf2 = conf.get_mot()
-            if i > len(automate.get_regles()):
-                return "La configuration ne devient pas un stable"
+            if i == len(automate.get_regles()):
+                return "La configuration ne contient pas de succession"
             i += 1
     return (conf.get_mot(),i)
