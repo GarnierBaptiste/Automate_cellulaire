@@ -10,7 +10,38 @@ bonus = fonc[4] if len(fonc) > 4 else None
 
 match fonc[1]:
     case "exo0":
-        print("Tout")
+        print("Question 1 :")
+        print(inspect.getsource(Automate))
+        print("Question 2 :")
+        print(inspect.getsource(Configuration_Automate))
+        print("Question 3 :")
+        print(inspect.getsource(initialisation))
+        print("Question 4 :")
+        print(inspect.getsource(un_pas_automate))
+        print("Question 5 :")
+        print(inspect.getsource(calcul_automate_q5))
+        print("Question 6 :")
+        print(inspect.getsource(calcul_automate_q6))
+        print("Question 7 :")
+        print("Question 8 :")
+        print(inspect.getsource(Machine_Turing))
+        print("Question 9 :")
+        print(inspect.getsource(Configuration_Machine))
+        print("Question 10 :")
+        print(inspect.getsource(lecture))
+        print("Question 11 :")
+        print(inspect.getsource(un_pas_machine))
+        print("Question 12 :")
+        print(inspect.getsource(calcul_machine))
+        print("Question 13 :")
+        print(inspect.getsource(simulation))
+        print("Question 14 :")
+        with open('Fichier_Texte/Question14.txt','r') as f:
+            mot = '\n'
+            for elem in f.readlines():
+                mot += elem
+            print(mot)
+        print("Pour plus d'exemple de test, il faut utiliser les commandes individuelles avec un Mode")
     case "exo1":
         print(inspect.getsource(Automate))
     case "exo2":

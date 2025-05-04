@@ -124,9 +124,9 @@ def un_pas_automate(conf : Configuration_Automate,automate : Automate,simulation
                 nv_ruban.append(mot[i])
             else:
                 nv_ruban.append(automate.get_regles()[transition])
-    #partie pour traiter la simulation d'une Machine de turing en Automate Cellulaire
+    # partie pour traiter la simulation d'une Machine de turing en Automate Cellulaire
     if simulation:
-        #permet d'avoir une liste de tuple tel que (('q0','1),('*',1'),..) et non ("('q0',1),('*','1'),...)")
+        # permet d'avoir une liste de tuple tel que (('q0','1),('*',1'),..) et non ("('q0',1),('*','1'),...)")
         nouvelle_conf = [ast.literal_eval(item) for item in tuple(mot)]
         for i in range(taille):
             if i>0 and i < taille-1:

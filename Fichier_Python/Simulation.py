@@ -1,9 +1,11 @@
-from Automate_cellulaire import Automate,Configuration_Automate,calcul_automate_q5,un_pas_automate
-from Machine_Turing import Machine_Turing,Configuration_Machine,calcul_machine,lecture
+from Automate_cellulaire import Automate,Configuration_Automate,calcul_automate_q5
+from Machine_Turing import Machine_Turing,Configuration_Machine,calcul_machine
 
 def simulation(mt:Machine_Turing,mot):
     """
-    Cette fonction permet de simuler la machine de turing et l'automate cellulaire sur le mot donné en parametre.
+    QUESTION 13 : Programmer une fonction qui prend en entrée le code d'une machine de Turing et construit
+    l'automate cellulaire qui la simule. Tester sur plusieurs exemples que la machine de Turing et sa simulation
+    par un automate cellulaire font le même calcul.
     """
     def ruban_sans_tiret(ruban):
         '''
@@ -49,7 +51,7 @@ def simulation(mt:Machine_Turing,mot):
                                 regles[tuple(triplet)] = (q2,triplet[1][1])  
                             else:
                                 regles[tuple(triplet)] = (triplet[1]) 
-    automate=Automate(etats,regles)
+    automate = Automate(etats,regles)
     ruban = []
     for i in range(len(mot)):
         if i == 0:
@@ -64,7 +66,3 @@ def simulation(mt:Machine_Turing,mot):
         return automate, conf,True
     else:
         return automate, conf,False
-
-if __name__ == "__main__":
-    mt, config = lecture('Fichier_Texte\Machine_Turing.txt')
-    print(simulation(mt,config.get_ruban()))
